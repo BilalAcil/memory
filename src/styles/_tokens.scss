@@ -1,0 +1,27 @@
+// === Design-Tokens ===
+// Zentrale Werte für das ganze Projekt: einmal hier definieren, überall nutzen.
+// Ändert sich z.B. die Akzentfarbe, passen wir sie nur an EINER Stelle an.
+
+// --- Farben ---
+$color-bg-dark:        #303131; // Home-Hintergrund (Anthrazit)
+$color-text-light:     #ffffff;
+$color-text-on-accent: #303131; // dunkler Text auf hellem Button
+$color-accent-yellow:  #f0ea6e; // Play-Button
+
+// Theme-Akzentfarben (für später: die zwei Spielfeld-Layouts)
+$color-theme-code:  #1f9e8f; // Code Vibes  → Türkis/Grün
+$color-theme-games: #c2185b; // Games Theme → Magenta/Pink
+
+// --- Schrift ---
+$font-family-base:    'Almarai', system-ui, -apple-system, sans-serif; // Fließtext
+$font-family-heading: 'Red Rose', system-ui, -apple-system, sans-serif; // Überschriften
+
+// --- Abstände ---
+$space-sm: 0.5rem;
+$space-md: 1rem;
+$space-lg: 2rem;
+$space-xl: 3rem;
+
+// --- Radius ---
+$radius-sm: 4px;
+$radius-md: 8px;

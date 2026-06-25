@@ -1,0 +1,28 @@
+import { navigateTo } from '../router';
+
+/**
+ * Rendert den Home-Screen in das übergebene Wurzel-Element
+ * und verbindet den Play-Button mit dem Wechsel zum Settings-Screen.
+ */
+export function renderHome(root: HTMLElement): void {
+  root.innerHTML = `
+    <section class="home">
+      <!-- Controller-Watermark: Farbe, Deckkraft (0.05) und Drehung sind im SVG eingebacken -->
+      <img class="home__watermark" src="/assets/icons/stadia_controller.svg" alt="" aria-hidden="true" />
+
+      <div class="home__content">
+        <p class="home__eyebrow">It's play time.</p>
+        <h1 class="home__title">Ready to play?</h1>
+
+        <button class="btn-play" type="button">
+          <img class="btn-play__icon" src="/assets/icons/controller.svg" alt="" />
+          <span>Play</span>
+          <img class="btn-play__arrow" src="/assets/icons/arrow-right.svg" alt="" />
+        </button>
+      </div>
+    </section>
+  `;
+
+  const playButton = root.querySelector<HTMLButtonElement>('.btn-play');
+  playButton?.addEventListener('click', () => navigateTo('settings'));
+}

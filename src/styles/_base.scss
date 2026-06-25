@@ -1,0 +1,25 @@
+@use 'tokens' as *;
+
+// --- Reset: einheitlicher Ausgangszustand über alle Browser ---
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: $font-family-base;
+  background-color: $color-bg-dark;
+  color: $color-text-light;
+  -webkit-font-smoothing: antialiased;
+}
+
+// Wurzel-Element der App füllt die volle Höhe.
+#app {
+  height: 100vh;
+}

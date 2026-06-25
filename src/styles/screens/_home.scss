@@ -1,0 +1,98 @@
+@use '../tokens' as *;
+
+.home {
+  position: relative;
+  height: 100%;
+  overflow: hidden; // Watermark, das über den Rand ragt, abschneiden
+  display: flex;
+  align-items: center; // Inhalt vertikal mittig
+  background-color: $color-bg-dark;
+}
+
+// --- Textblock (links ausgerichtet) ---
+.home__content {
+  position: relative;
+  z-index: 1; // liegt über dem Watermark
+  padding-left: 15%;
+  max-width: 800px;
+}
+
+.home__eyebrow {
+  font-family: $font-family-base; // Almarai
+  font-size: clamp(1.75rem, 3.3vw, 3rem); // Figma: 48px
+  font-weight: 400;
+  line-height: 1; // Figma: 100%
+  margin-bottom: $space-md;
+}
+
+.home__title {
+  font-family: $font-family-heading; // Red Rose
+  font-size: clamp(4rem, 10vw, 8.75rem); // Figma: 140px
+  font-weight: 700;
+  line-height: 1; // Figma: 100%
+  white-space: nowrap; // bleibt auf einer Zeile (kein Umbruch wie im Figma)
+  margin-bottom: $space-lg;
+}
+
+// --- Play-Button ---
+.btn-play {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-sm;
+  padding: 0.85rem 1.5rem;
+  background-color: $color-accent-yellow;
+  color: $color-text-on-accent;
+  border: none;
+  border-radius: $radius-sm;
+  font-family: $font-family-heading; // Red Rose
+  font-size: clamp(1.5rem, 2.8vw, 2.5rem); // Figma: 40px
+  font-weight: 700;
+  line-height: 1; // Figma: 100%
+  cursor: pointer;
+  transition: transform 150ms ease, filter 150ms ease;
+
+  &:hover {
+    filter: brightness(1.05);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  // Icon-Größen relativ zur Schriftgröße (em → skaliert mit der Button-Schrift)
+  &__icon {
+    display: block;
+    height: 0.85em;
+    width: auto;
+  }
+
+  &__arrow {
+    display: block;
+    width: 0.95em;
+    height: auto;
+  }
+}
+
+// --- Animiertes Controller-Watermark (unten links) ---
+// Drehung, Farbe und Deckkraft (0.05) stecken bereits im SVG → hier nur platzieren.
+.home__watermark {
+  position: absolute;
+  left: -88px; // Figma: ragt links aus dem Bild
+  bottom: -40px;
+  width: clamp(320px, 32vw, 414px); // Figma: ~414px
+  height: auto;
+  pointer-events: none; // blockiert keine Klicks
+  animation: home-float 5s ease-in-out infinite;
+}
+
+// Sanftes Schweben (nur Auf/Ab — die Drehung kommt aus dem SVG).
+@keyframes home-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
