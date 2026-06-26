@@ -194,22 +194,20 @@
   }
 }
 
-// --- Vorschau-Box (Farbe wechselt je nach Theme) ---
+// --- Vorschau-Bild (wechselt je nach gewähltem/gehovertem Theme) ---
 .preview {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   border-radius: 16px;
-  aspect-ratio: 16 / 10;
-  color: rgba(255, 255, 255, 0.6);
-  font-style: italic;
+  aspect-ratio: 460 / 412; // entspricht den SVG-Maßen → keine Verzerrung
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 
   &[data-theme='code-vibes'] {
-    background-color: #2b2b2b;
+    background-image: url('/assets/previews/code-vibes.png');
   }
 
   &[data-theme='gaming'] {
-    background: linear-gradient(135deg, #2a7d9b, #163b4d);
+    background-image: url('/assets/previews/gaming.png');
   }
 }
 

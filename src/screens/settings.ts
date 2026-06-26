@@ -66,9 +66,7 @@ export function renderSettings(root: HTMLElement): void {
 
           <!-- RECHTS: Vorschau + Stepper -->
           <div class="settings__preview-area">
-            <div class="preview" data-theme="${settings.theme}">
-              <span class="preview__hint">Vorschau (Bild folgt)</span>
-            </div>
+            <div class="preview" data-theme="${settings.theme}"></div>
 
             <nav class="stepper">
               <span class="stepper__item">Game theme</span>
