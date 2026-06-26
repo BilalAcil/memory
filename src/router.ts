@@ -1,4 +1,5 @@
 import { renderHome } from './screens/home';
+import { renderSettings } from './screens/settings';
 
 // Die möglichen Screens der App.
 export type Screen = 'home' | 'settings' | 'game' | 'gameover';
@@ -17,6 +18,9 @@ export function navigateTo(screen: Screen): void {
   switch (screen) {
     case 'home':
       renderHome(root);
+      break;
+    case 'settings':
+      renderSettings(root);
       break;
     default:
       // Platzhalter, bis Settings / Game / GameOver gebaut sind.

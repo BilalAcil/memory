@@ -1,0 +1,262 @@
+@use '../tokens' as *;
+
+.settings {
+  min-height: 100%;
+  background-color: #ffffff; // Settings-Screen ist hell
+  color: $color-text-on-accent; // dunkler Text
+}
+
+.settings__panel {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 4rem);
+}
+
+// --- Titel mit gelber Unterstreichung + Diamant ---
+.settings__title {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.6rem;
+  margin-bottom: $space-xl;
+  font-family: $font-family-heading; // Red Rose
+  font-size: 3.375rem; // Figma: 54px
+  font-weight: 700;
+  color: $color-text-on-accent; // #303131
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 251px; // Figma: feste Linienbreite
+    height: 4px;
+    background-color: $color-accent-yellow;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    bottom: -4px;
+    width: 12px;
+    height: 12px;
+    background-color: $color-accent-yellow;
+    transform: rotate(45deg); // Quadrat → Diamant
+  }
+}
+
+// --- Zwei Spalten: Optionen links, Vorschau rechts ---
+.settings__body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+}
+
+// --- Optionsgruppen ---
+.option-group {
+  border: none;
+  margin: 0 0 $space-lg;
+  padding: 0;
+}
+
+.option-group__title {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  margin-bottom: $space-md;
+  font-family: $font-family-base; // Almarai
+  font-weight: 700; // Figma: Bold
+  font-size: 1.5rem; // Figma: 24px
+
+  svg,
+  img {
+    width: 1.667rem; // Figma: ~26.67px
+    height: 1.667rem;
+  }
+}
+
+.option-group__items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px; // 
+  padding-left: 0.25rem;
+}
+
+// --- Eigene Radio-Buttons ---
+.radio {
+  display: flex;
+  align-items: center;
+  min-height: 32px; // feste Höhe → kein Wackeln beim Hovern (fett vs. normal)
+  font-family: $font-family-base; // Almarai
+  font-size: 1.25rem; // Figma: 20px
+  font-weight: 400; // normal; ausgewählt wird fett (siehe unten)
+
+  // Klickbarer Bereich (Label): nur hier Cursor-Pointer + Auswahl.
+  &__main {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+  }
+
+  // Natives Radio ausblenden und durch eigenen Kreis ersetzen.
+  input {
+    appearance: none;
+    -webkit-appearance: none;
+    margin: 0;
+    width: 20px; // Figma: 20px
+    height: 20px;
+    border: 3px solid #000000;
+    border-radius: 50%;
+    display: grid;
+    place-content: center;
+    cursor: pointer;
+
+    &::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: $color-text-on-accent;
+      transform: scale(0);
+      transition: transform 150ms ease;
+    }
+
+    // Gewählt: dünnerer, dunkler Rand (alle Gruppen, erst beim Klick).
+    &:checked {
+      border-width: 2px;
+      border-color: $color-text-on-accent;
+    }
+
+    &:checked::before {
+      transform: scale(1);
+    }
+  }
+
+  // Ausgewählte Option wird fett (alle Gruppen).
+  input:checked ~ .radio__label {
+    font-weight: 700;
+  }
+
+  // Hover-Effekt NUR bei Game themes — ausgelöst vom ganzen .radio__main (Kreis + Text).
+  &__main:hover:has(input[name='theme']) {
+    input {
+      border-width: 2px;
+      border-color: $color-text-on-accent;
+    }
+
+    input::before {
+      transform: scale(1);
+    }
+
+    .radio__label {
+      font-weight: 700;
+    }
+  }
+
+  // Gelbe Pfeil-Linie nur bei ausgewähltem Theme sichtbar.
+  &__arrow {
+    width: 50px; // Figma: Linie 41px + Pfeilspitze
+    height: auto;
+    margin-left: 0.5rem;
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+
+  // Pfeil sichtbar bei gewählt (alle Gruppen) oder beim Hovern eines Themes.
+  &__main:has(input:checked) ~ .radio__arrow,
+  &__main:hover:has(input[name='theme']) ~ .radio__arrow {
+    opacity: 1;
+  }
+}
+
+// Beim Hovern eines Themes soll das tatsächlich gewählte Theme (falls nicht
+// selbst gehovert) vorübergehend wie "nicht gewählt" aussehen. Nur bei Game themes.
+.option-group__items:has(.radio__main:hover input[name='theme']) {
+  .radio__main:not(:hover):has(input:checked) {
+    input {
+      border-width: 3px;
+      border-color: #000000;
+    }
+
+    input::before {
+      transform: scale(0);
+    }
+
+    .radio__label {
+      font-weight: 400;
+    }
+  }
+
+  .radio__main:not(:hover):has(input:checked) ~ .radio__arrow {
+    opacity: 0;
+  }
+}
+
+// --- Vorschau-Box (Farbe wechselt je nach Theme) ---
+.preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  aspect-ratio: 16 / 10;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+
+  &[data-theme='code-vibes'] {
+    background-color: #2b2b2b;
+  }
+
+  &[data-theme='gaming'] {
+    background: linear-gradient(135deg, #2a7d9b, #163b4d);
+  }
+}
+
+// --- Stepper unter der Vorschau ---
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: $space-lg;
+  padding: 0.6rem 0.75rem;
+  background-color: #f3f4f6;
+  border-radius: 10px;
+  font-family: $font-family-base;
+
+  &__item {
+    font-size: 1rem;
+  }
+
+  &__sep {
+    color: $color-accent-yellow;
+    font-weight: 700;
+    transform: skewX(-12deg);
+  }
+
+  &__start {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    background-color: $color-accent-yellow;
+    color: $color-text-on-accent;
+    border: none;
+    border-radius: 8px;
+    font-family: $font-family-heading; // Red Rose
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: filter 150ms ease;
+
+    &:hover {
+      filter: brightness(1.05);
+    }
+
+    svg {
+      width: 1.2em;
+      height: 1.2em;
+    }
+  }
+}
