@@ -7,7 +7,7 @@ const iconPlayer = `<img src="/assets/icons/chess_pawn.svg" alt="" />`;  // #1AE
 const iconBoard = `<img src="/assets/icons/style.svg" alt="" />`;        // #0635C9 (Blau)
 // Gelbe Pfeil-Linie neben dem ausgewählten Theme (Farbe im SVG eingebacken).
 const iconArrow = `<img class="radio__arrow" src="/assets/icons/Line%203.svg" alt="" aria-hidden="true" />`;
-const iconPlay = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>`;
+const iconPlay = `<img src="/assets/icons/smart_display.svg" alt="" />`;
 
 /**
  * Baut eine einzelne Radio-Option.
@@ -69,11 +69,11 @@ export function renderSettings(root: HTMLElement): void {
             <div class="preview" data-theme="${settings.theme}"></div>
 
             <nav class="stepper">
-              <span class="stepper__item">Game theme</span>
-              <span class="stepper__sep">/</span>
-              <span class="stepper__item">Player</span>
-              <span class="stepper__sep">/</span>
-              <span class="stepper__item">Board size</span>
+              <div class="stepper__steps">
+                <span class="stepper__item">Game theme</span>
+                <span class="stepper__item">Player</span>
+                <span class="stepper__item">Board size</span>
+              </div>
               <button class="stepper__start" type="button">${iconPlay}<span>Start</span></button>
             </nav>
           </div>

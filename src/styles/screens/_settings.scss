@@ -1,5 +1,10 @@
 @use '../tokens' as *;
 
+// Auf der Settings-Seite ist der gesamte Hintergrund hell (auch um den Frame herum).
+body[data-screen='settings'] {
+  background-color: #ffffff;
+}
+
 .settings {
   min-height: 100%;
   background-color: #ffffff; // Settings-Screen ist hell
@@ -7,8 +12,9 @@
 }
 
 .settings__panel {
-  max-width: 1100px;
-  margin: 0 auto;
+  width: fit-content; // Breite ergibt sich aus dem Inhalt (1103px-Body)
+  max-width: 100%; // läuft auf schmalen Schirmen nicht über
+  margin: 0 auto; // zentriert die ganze Spalte (Titel + Body)
   padding: clamp(2rem, 5vw, 4rem);
 }
 
@@ -47,16 +53,25 @@
 
 // --- Zwei Spalten: Optionen links, Vorschau rechts ---
 .settings__body {
+  width: 1103px; // Figma
+  height: 539px; // Figma
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: clamp(2rem, 5vw, 4rem);
   align-items: start;
 }
 
+// --- Linke Spalte: Auswahl-Optionen über die volle Höhe verteilt ---
+.settings__options {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 // --- Optionsgruppen ---
 .option-group {
   border: none;
-  margin: 0 0 $space-lg;
   padding: 0;
 }
 
@@ -135,7 +150,7 @@
   }
 
   // Ausgewählte Option wird fett (alle Gruppen).
-  input:checked ~ .radio__label {
+  input:checked~.radio__label {
     font-weight: 700;
   }
 
@@ -165,8 +180,8 @@
   }
 
   // Pfeil sichtbar bei gewählt (alle Gruppen) oder beim Hovern eines Themes.
-  &__main:has(input:checked) ~ .radio__arrow,
-  &__main:hover:has(input[name='theme']) ~ .radio__arrow {
+  &__main:has(input:checked)~.radio__arrow,
+  &__main:hover:has(input[name='theme'])~.radio__arrow {
     opacity: 1;
   }
 }
@@ -189,15 +204,26 @@
     }
   }
 
-  .radio__main:not(:hover):has(input:checked) ~ .radio__arrow {
+  .radio__main:not(:hover):has(input:checked)~.radio__arrow {
     opacity: 0;
   }
 }
 
+// --- Rechte Spalte: Vorschau oben, Stepper unten über die volle Höhe verteilt ---
+.settings__preview-area {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 // --- Vorschau-Bild (wechselt je nach gewähltem/gehovertem Theme) ---
 .preview {
-  border-radius: 16px;
-  aspect-ratio: 460 / 412; // entspricht den SVG-Maßen → keine Verzerrung
+  width: 460px; // Figma: feste Breite
+  max-width: 100%; // schrumpft auf schmalen Fenstern mit
+  aspect-ratio: 460 / 412; // Figma: 460 × 412 → Höhe folgt der Breite
+  margin-left: auto; // rechtsbündig in der Spalte (Stepper darunter ist breiter)
+  border-radius: 16px; // Figma: 16px
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -211,50 +237,96 @@
   }
 }
 
-// --- Stepper unter der Vorschau ---
+// --- Stepper unter der Vorschau (breiter als die Vorschau) ---
 .stepper {
+  position: relative; // Anker für die rechte Verlängerung (::after)
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-top: $space-lg;
-  padding: 0.6rem 0.75rem;
-  background-color: #f3f4f6;
-  border-radius: 10px;
+  justify-content: space-around; // Schritte links, Start rechts
+  width: 546px; // Figma: breiter als die 460px-Vorschau
+  max-width: 100%;
+  height: 81px; // Figma: 81px
+  padding: 0 1.25rem;
+  background-color: #f6f6f6;
   font-family: $font-family-base;
 
-  &__item {
-    font-size: 1rem;
+  // Graue Verlängerung an der rechten Kante (gleiche Farbe + Höhe).
+  // Wächst beim Hovern des Start-Buttons nach rechts heraus — der Inhalt
+  // im Stepper bleibt dabei komplett unbewegt (die Box selbst bleibt 546px).
+  &::after {
+    content: '';
+    position: absolute;
+    left: 100%; // direkt an der rechten Kante ansetzen
+    top: 0;
+    height: 100%;
+    width: 0;
+    background-color: #f6f6f6;
+    transition: width 300ms ease;
   }
 
-  &__sep {
-    color: $color-accent-yellow;
-    font-weight: 700;
-    transform: skewX(-12deg);
+  &:has(.stepper__start:hover)::after {
+    width: 10px; // so weit wächst die rechte Seite heraus (kleiner = weniger Wachstum)
+  }
+
+  // Die drei Schritt-Labels mit 42px Abstand.
+  &__steps {
+    display: flex;
+    align-items: center;
+    gap: 42px; // Figma: 42px zwischen den Schritten
+  }
+
+  &__item {
+    cursor: pointer;
+    position: relative;
+    font-family: $font-family-base; // Almarai
+    font-weight: 400; // Figma: Regular
+    font-size: 1.25rem; // Figma: 20px
+    line-height: 1; // Figma: 100%
+  }
+
+  // Gelber Schrägstrich (gedrehter Balken) mittig im 42px-Abstand.
+  &__item:not(:first-child)::before {
+    content: '';
+    position: absolute;
+    left: -21px; // Mitte des 42px-Abstands
+    top: 50%;
+    width: 56px; // Figma: Länge
+    height: 8px; // Figma: 8px dick
+    background-color: $color-accent-yellow;
+    transform: translate(-50%, -50%) rotate(109.33deg); // Figma: -109.33° (CSS gespiegelt)
   }
 
   &__start {
-    margin-left: auto;
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.5rem 1rem;
+    justify-content: center;
+    gap: 8px; // Figma: 8px zwischen Icon und Text
+    width: 126px; // Figma: 126px
+    height: 53px; // Figma: 53px
+    padding: 14px 20px; // Figma: 14px / 20px
     background-color: $color-accent-yellow;
     color: $color-text-on-accent;
     border: none;
-    border-radius: 8px;
     font-family: $font-family-heading; // Red Rose
     font-weight: 700;
     font-size: 1.1rem;
     cursor: pointer;
-    transition: filter 150ms ease;
+    transform-origin: left center; // wächst beim Skalieren nach rechts (linke Kante bleibt fix)
+    transition: transform 250ms ease;
 
     &:hover {
-      filter: brightness(1.05);
+      transform: scale(1.1); // beim Hovern nur leicht vergrößern, Farbe bleibt
     }
 
-    svg {
-      width: 1.2em;
-      height: 1.2em;
+    img {
+      width: 1.4em;
+      height: 1.4em;
+      transition: transform 250ms ease;
+    }
+
+    // Icon dreht sich beim Hovern des Buttons um 10° nach links.
+    &:hover img {
+      transform: rotate(-10deg);
     }
   }
 }

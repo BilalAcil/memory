@@ -15,6 +15,10 @@ export function navigateTo(screen: Screen): void {
   if (!root) return;
   root.innerHTML = '';
 
+  // Aktiven Screen am <body> markieren, damit das CSS pro Screen reagieren kann
+  // (z.B. heller Hintergrund auf der Settings-Seite).
+  document.body.dataset.screen = screen;
+
   switch (screen) {
     case 'home':
       renderHome(root);
