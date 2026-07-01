@@ -6,15 +6,18 @@
   overflow: hidden; // Watermark, das über den Rand ragt, abschneiden
   display: flex;
   align-items: center; // Inhalt vertikal mittig
+  justify-content: center;
   background-color: $color-bg-dark;
 }
 
 // --- Textblock (links ausgerichtet) ---
 .home__content {
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   position: relative;
   z-index: 1; // liegt über dem Watermark
-  padding-left: 15%;
-  max-width: 800px;
 }
 
 .home__eyebrow {
@@ -22,42 +25,40 @@
   font-size: clamp(1.75rem, 3.3vw, 3rem); // Figma: 48px
   font-weight: 400;
   line-height: 1; // Figma: 100%
-  margin-bottom: $space-md;
 }
 
 .home__title {
+  display: flex;
+  align-items: flex-end;
   font-family: $font-family-heading; // Red Rose
   font-size: clamp(4rem, 10vw, 8.75rem); // Figma: 140px
   font-weight: 700;
-  line-height: 1; // Figma: 100%
   white-space: nowrap; // bleibt auf einer Zeile (kein Umbruch wie im Figma)
-  margin-bottom: $space-lg;
 }
 
 // --- Play-Button ---
 .btn-play {
+  position: absolute;
+  top: 75%;
   display: inline-flex;
   align-items: center;
-  gap: $space-sm;
-  padding: 0.85rem 1.5rem;
+  justify-content: space-evenly;
+  // Schrumpft mit der Fensterbreite (wie eyebrow/title), max = Figma 250×98.
+  width: clamp(160px, 17.4vw, 250px); // 250 / 1440 ≈ 17.4vw
+  height: clamp(63px, 6.8vw, 98px); // 98 / 1440 ≈ 6.8vw
   background-color: $color-accent-yellow;
   color: $color-text-on-accent;
   border: none;
-  border-radius: $radius-sm;
   font-family: $font-family-heading; // Red Rose
   font-size: clamp(1.5rem, 2.8vw, 2.5rem); // Figma: 40px
   font-weight: 700;
   line-height: 1; // Figma: 100%
   cursor: pointer;
-  transition: transform 150ms ease, filter 150ms ease;
+  transition: transform 250ms ease;
 
+  // Beim Hovern leicht vergrößern.
   &:hover {
-    filter: brightness(1.05);
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
+    transform: scale(1.1);
   }
 
   // Icon-Größen relativ zur Schriftgröße (em → skaliert mit der Button-Schrift)
@@ -65,12 +66,52 @@
     display: block;
     height: 0.85em;
     width: auto;
+    transition: transform 250ms ease;
   }
 
+  // Beim Hovern des Buttons dreht sich das Icon um 10° nach links.
+  &:hover &__icon {
+    transform: rotate(-25deg);
+  }
+
+  // Pfeil-Slot: dünne + dicke Variante liegen übereinander.
   &__arrow {
-    display: block;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
     width: 0.95em;
-    height: auto;
+
+    img {
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  // Beim Weg-Hovern: dünn kommt erst nach kurzer Pause zurück (delay), dick geht sofort.
+  &__arrow-thin {
+    transition: opacity 120ms linear 200ms;
+  }
+
+  // Dicke Variante überlagert die dünne und ist standardmäßig unsichtbar.
+  &__arrow-bold {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 120ms linear;
+  }
+
+  // Beim Hovern: dünn sofort ausblenden …
+  &:hover &__arrow-thin {
+    opacity: 0;
+    transition: opacity 120ms linear;
+  }
+
+  // … kurze Pause, dann dick einblenden (delay = Ausblendzeit + Pause), linear/kein ease.
+  &:hover &__arrow-bold {
+    opacity: 1;
+    transition: opacity 120ms linear 200ms;
   }
 }
 
@@ -78,7 +119,7 @@
 // Drehung, Farbe und Deckkraft (0.05) stecken bereits im SVG → hier nur platzieren.
 .home__watermark {
   position: absolute;
-  left: -88px; // Figma: ragt links aus dem Bild
+  left: 0px; // Figma: ragt links aus dem Bild
   bottom: -40px;
   width: clamp(320px, 32vw, 414px); // Figma: ~414px
   height: auto;
@@ -88,10 +129,12 @@
 
 // Sanftes Schweben (nur Auf/Ab — die Drehung kommt aus dem SVG).
 @keyframes home-float {
+
   0%,
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-15px);
   }

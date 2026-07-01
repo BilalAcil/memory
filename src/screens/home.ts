@@ -13,13 +13,16 @@ export function renderHome(root: HTMLElement): void {
       <div class="home__content">
         <p class="home__eyebrow">It's play time.</p>
         <h1 class="home__title">Ready to play?</h1>
+      </div>
 
         <button class="btn-play" type="button">
           <img class="btn-play__icon" src="/assets/icons/controller.svg" alt="" />
           <span>Play</span>
-          <img class="btn-play__arrow" src="/assets/icons/arrow-right.svg" alt="" />
+          <span class="btn-play__arrow">
+            <img class="btn-play__arrow-thin" src="/assets/icons/arrow-right.svg" alt="" />
+            <img class="btn-play__arrow-bold" src="/assets/icons/arrow-right-bold.svg" alt="" />
+          </span>
         </button>
-      </div>
     </section>
   `;
 
