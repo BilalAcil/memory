@@ -7,23 +7,29 @@ body[data-screen='settings'] {
 
 .settings {
   min-height: 100%;
-  background-color: #ffffff; // Settings-Screen ist hell
-  color: $color-text-on-accent; // dunkler Text
+  background-color: #ffffff;
+  color: #303131;
+
+  // Panel exakt in der Section-Mitte.
+  display: grid;
+  place-items: center;
 }
 
 .settings__panel {
-  width: fit-content; // Breite ergibt sich aus dem Inhalt (1103px-Body)
-  max-width: 100%; // läuft auf schmalen Schirmen nicht über
-  margin: 0 auto; // zentriert die ganze Spalte (Titel + Body)
-  padding: clamp(2rem, 5vw, 4rem);
+  position: relative; // Bezug für den absolut platzierten Titel
+  width: fit-content;
+  max-width: 100%;
 }
 
 // --- Titel mit gelber Unterstreichung + Diamant ---
 .settings__title {
-  position: relative;
-  display: inline-block;
-  padding-bottom: 0.6rem;
-  margin-bottom: $space-xl;
+  // Am Panel verankert: liegt direkt über der Panel-Oberkante, linksbündig.
+  // Wandert dadurch immer mit dem Panel mit – stabil bei Zoom und Resize.
+  position: absolute;
+  bottom: 100%; // direkt über dem Panel
+  left: 0; // bündig zur linken Panel-Kante
+  margin-bottom: $space-xl; // fester Abstand zum Panel
+  padding-bottom: 0.4rem;
   font-family: $font-family-heading; // Red Rose
   font-size: 3.375rem; // Figma: 54px
   font-weight: 700;
@@ -53,8 +59,8 @@ body[data-screen='settings'] {
 
 // --- Zwei Spalten: Optionen links, Vorschau rechts ---
 .settings__body {
-  width: 1103px; // Figma
-  height: 539px; // Figma
+  width: 1100px; // Figma
+  height: 540px; // Figma
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: clamp(2rem, 5vw, 4rem);

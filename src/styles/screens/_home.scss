@@ -5,8 +5,9 @@
   height: 100%;
   overflow: hidden; // Watermark, das über den Rand ragt, abschneiden
   display: flex;
-  align-items: center; // Inhalt vertikal mittig
-  justify-content: center;
+  flex-direction: column; // Content oben, Button darunter
+  align-items: center; // horizontal mittig
+  justify-content: center; // Gruppe (Content + Button) vertikal mittig
   background-color: $color-bg-dark;
 }
 
@@ -38,8 +39,8 @@
 
 // --- Play-Button ---
 .btn-play {
-  position: absolute;
-  top: 75%;
+  // Abstand zum Content — schrumpft mit der Monitorhöhe (vh) mit.
+  margin-top: clamp(1rem, 4vh, 3rem);
   display: inline-flex;
   align-items: center;
   justify-content: space-evenly;
