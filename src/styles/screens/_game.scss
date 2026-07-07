@@ -1,0 +1,179 @@
+@use '../tokens' as *;
+
+// --- Grundgerüst + Theme-Farben (ein Regelwerk, zwei Ausprägungen über CSS-Variablen) ---
+.game {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: $color-text-light;
+  background-color: var(--game-bg);
+  gap: 54px; // Abstand Header <-> Spielfeld
+
+  &[data-theme='code-vibes'] {
+    --game-bg: #303131;
+    --game-header-bg: #1e1f1f;
+    --game-accent: #{$color-theme-code};
+    --game-exit-bg: rgba(31, 158, 143, 0.15);
+    --score-icon-w: 1.5rem; // 24px
+    --score-icon-h: 1.25rem; // 20px
+  }
+
+  &[data-theme='gaming'] {
+    --game-bg: #2e4a5a;
+    --game-header-bg: #4a4a63;
+    --game-accent: #{$color-theme-games};
+    --game-exit-bg: rgba(255, 255, 255, 0.1);
+    --score-icon-w: 1.5rem; // TODO: Games-Maße einsetzen
+    --score-icon-h: 1.25rem; // TODO: Games-Maße einsetzen
+  }
+}
+
+// --- Header: drei Zonen (Punkte links, aktiver Spieler mittig, Exit rechts) ---
+.game__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-md;
+  padding: clamp(0.75rem, 2vw, 1.5rem) clamp(1.5rem, 4vw, 3rem);
+}
+
+// Container für Punktestände (links) + aktiver Spieler (mitte).
+.game__status {
+  display: flex;
+  align-items: center;
+  height: 3.75rem; // 60px
+  gap: 10.625rem; // 170px
+}
+
+.game__scores {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem; // 20px
+  padding: 1.0625rem 1.25rem; // 17px / 20px
+  background: #86e9d633; // Code-vibes (theme-spezifisch – Gaming-Wert später)
+}
+
+.score {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-sm;
+  font-family: $font-family-heading; // Red Rose
+  font-size: 1.5rem; // 24px
+  font-weight: 700;
+  cursor: default;
+
+  img {
+    width: var(--score-icon-w); // theme-spezifisch (Code-vibes ≠ Games)
+    height: var(--score-icon-h);
+  }
+
+  // Textfarbe je Spieler (die PNG-Icons sind bereits farbig).
+  &[data-color='blue'] {
+    color: #2bb1ff;
+  }
+
+  &[data-color='orange'] {
+    color: #f58e39;
+  }
+}
+
+.game__turn {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  font-family: $font-family-heading; // Red Rose
+  font-weight: 400; // Regular
+  font-size: 1.625rem; // 26px
+  line-height: 1; // 100%
+  cursor: pointer;
+
+  &-icon {
+    height: 1.6em;
+    width: auto;
+  }
+}
+
+.game__exit {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-sm;
+  padding: 1rem 1.5rem; // 16px / 24px
+  border: 1px solid var(--game-accent);
+  background-color: var(--game-exit-bg);
+  color: $color-text-light;
+  font-family: $font-family-heading; // Red Rose
+  font-weight: 700; // Bold
+  font-size: 1.5rem; // 24px
+  line-height: 1; // 100%
+  cursor: pointer;
+  transition: box-shadow 250ms ease;
+
+  &:hover {
+    // Der 2px-Ring "verdickt" den 1px-Border optisch auf ~3px — ohne Layout-Sprung,
+    // weil box-shadow den Platzbedarf nicht verändert (keine Zuckung).
+    box-shadow:
+      0 0 0 2px var(--game-accent), // verdickter Rahmen (Ring außen)
+      0 0 5px var(--game-accent), // dezenter Glanz (Glow)
+      5px 5px 8px rgba(167, 135, 135, 0.45); // Schlagschatten nach rechts & unten
+  }
+
+  img {
+    width: 1.875rem; // 30px
+    height: 1.875rem; // 30px
+  }
+}
+
+// --- Spielfeld: Grid mit dynamischer Spaltenzahl (--cols kommt aus dem TS) ---
+.game__board {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), auto); // Spalten so breit wie die Karten
+  gap: clamp(0.5rem, 1.5vw, 1rem);
+  place-content: center; // Karten mittig im Board
+  width: 33.125rem; // 530px
+  height: 33.125rem; // 530px
+  margin: 0 auto;
+}
+
+// --- Karte mit 3D-Flip ---
+.card {
+  width: 7.5rem; // 120px
+  height: 7.5rem; // 120px
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  perspective: 800px; // 3D-Tiefe für die Drehung
+
+  &__inner {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    transition: transform 400ms ease;
+    transform-style: preserve-3d; // beide Seiten im 3D-Raum
+  }
+
+  // Aufgedeckt: Karte um 180° gedreht.
+  &.is-flipped .card__inner {
+    transform: rotateY(180deg);
+  }
+
+  &__face {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    backface-visibility: hidden; // die abgewandte Fläche wird nicht durchscheinen
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  // Vorderseite liegt anfangs „hinten" und wird durch den Flip sichtbar.
+  &__face--front {
+    transform: rotateY(180deg);
+  }
+}
