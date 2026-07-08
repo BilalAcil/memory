@@ -81,6 +81,32 @@ body[data-screen='settings'] {
   padding: 0;
 }
 
+// Fehlende Pflicht-Auswahl: Titel bleibt rot, bis der Spieler etwas wählt.
+.option-group.is-invalid .option-group__title {
+  color: #e5484d;
+}
+
+// Kurzes Wackeln – separate Klasse, wird nach der Animation entfernt und ist
+// dadurch bei erneutem Start-Klick wieder auslösbar (unabhängig vom roten Zustand).
+.option-group.is-shaking {
+  animation: option-group-shake 400ms ease;
+}
+
+@keyframes option-group-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+
 .option-group__title {
   display: flex;
   align-items: center;

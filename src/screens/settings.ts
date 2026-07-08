@@ -95,9 +95,11 @@ export function renderSettings(root: HTMLElement): void {
         break;
       case 'player':
         settings.player = input.value as PlayerColor;
+        input.closest('.option-group')?.classList.remove('is-invalid'); // Fehler-Markierung weg
         break;
       case 'board':
         settings.boardSize = Number(input.value) as BoardSize;
+        input.closest('.option-group')?.classList.remove('is-invalid');
         break;
     }
   });
@@ -115,11 +117,42 @@ export function renderSettings(root: HTMLElement): void {
   });
 
   // Start → zum Spielfeld (nur wenn Spieler UND Größe gewählt sind).
+  // Fehlt etwas, wackelt die betroffene Gruppe und ihr Titel leuchtet kurz auf.
   root.querySelector<HTMLButtonElement>('.stepper__start')
     ?.addEventListener('click', () => {
-      if (settings.player === null || settings.boardSize === null) {
-        return; // noch unvollständig — vorerst passiert nichts
+      const missing: Element[] = [];
+      if (settings.player === null) {
+        const group = root.querySelector('input[name="player"]')?.closest('.option-group');
+        if (group) missing.push(group);
       }
+      if (settings.boardSize === null) {
+        const group = root.querySelector('input[name="board"]')?.closest('.option-group');
+        if (group) missing.push(group);
+      }
+
+      if (missing.length > 0) {
+        missing.forEach(hintMissing); // Hinweis-Effekt statt Weiterleitung
+        return;
+      }
+
       navigateTo('game');
     });
+}
+
+/**
+ * Markiert eine Optionsgruppe als fehlend: Titel bleibt rot (`is-invalid`, bis
+ * eine Option gewählt wird) und die Gruppe wackelt einmal kurz (`is-shaking`).
+ */
+function hintMissing(group: Element): void {
+  group.classList.add('is-invalid'); // roter Zustand bleibt bestehen
+
+  // Wackeln neu starten (Klasse entfernen → Reflow → wieder setzen).
+  group.classList.remove('is-shaking');
+  void (group as HTMLElement).offsetWidth;
+  group.classList.add('is-shaking');
+  group.addEventListener(
+    'animationend',
+    () => group.classList.remove('is-shaking'),
+    { once: true },
+  );
 }
