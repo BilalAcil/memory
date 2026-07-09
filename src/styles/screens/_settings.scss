@@ -19,6 +19,7 @@ body[data-screen='settings'] {
   position: relative; // Bezug für den absolut platzierten Titel
   width: fit-content;
   max-width: 100%;
+  margin-left: 114px
 }
 
 // --- Titel mit gelber Unterstreichung + Diamant ---
@@ -34,6 +35,7 @@ body[data-screen='settings'] {
   font-size: 3.375rem; // Figma: 54px
   font-weight: 700;
   color: $color-text-on-accent; // #303131
+  cursor: default;
 
   &::after {
     content: '';
@@ -59,8 +61,8 @@ body[data-screen='settings'] {
 
 // --- Zwei Spalten: Optionen links, Vorschau rechts ---
 .settings__body {
-  width: 1100px; // Figma
-  height: 540px; // Figma
+  width: 1248px;
+  height: 540px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: clamp(2rem, 5vw, 4rem);
@@ -93,14 +95,17 @@ body[data-screen='settings'] {
 }
 
 @keyframes option-group-shake {
+
   0%,
   100% {
     transform: translateX(0);
   }
+
   20%,
   60% {
     transform: translateX(-6px);
   }
+
   40%,
   80% {
     transform: translateX(6px);
@@ -115,6 +120,7 @@ body[data-screen='settings'] {
   font-family: $font-family-base; // Almarai
   font-weight: 700; // Figma: Bold
   font-size: 1.5rem; // Figma: 24px
+  cursor: default;
 
   svg,
   img {
@@ -127,7 +133,7 @@ body[data-screen='settings'] {
   display: flex;
   flex-direction: column;
   gap: 2px; // 
-  padding-left: 0.25rem;
+  padding-left: 2.5rem;
 }
 
 // --- Eigene Radio-Buttons ---
@@ -145,6 +151,11 @@ body[data-screen='settings'] {
     align-items: center;
     gap: 0.6rem;
     cursor: pointer;
+  }
+
+  // Bereits gewählte Option: erneuter Klick ändert nichts → Standard-Cursor.
+  &__main:has(input:checked) {
+    cursor: default;
   }
 
   // Natives Radio ausblenden und durch eigenen Kreis ersetzen.
@@ -174,6 +185,7 @@ body[data-screen='settings'] {
     &:checked {
       border-width: 2px;
       border-color: $color-text-on-accent;
+      cursor: default; // erneuter Klick ändert nichts
     }
 
     &:checked::before {
@@ -247,14 +259,20 @@ body[data-screen='settings'] {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: flex-end;
+}
+
+.preview__wrapper {
+  display: flex;
+  justify-content: flex-end; // Vorschau rechtsbündig im Stepper-Bereich
 }
 
 // --- Vorschau-Bild (wechselt je nach gewähltem/gehovertem Theme) ---
 .preview {
   width: 460px; // Figma: feste Breite
   max-width: 100%; // schrumpft auf schmalen Fenstern mit
+  margin-right: 114px;
   aspect-ratio: 460 / 412; // Figma: 460 × 412 → Höhe folgt der Breite
-  margin-left: auto; // rechtsbündig in der Spalte (Stepper darunter ist breiter)
   border-radius: 16px; // Figma: 16px
   background-size: cover;
   background-position: center;
@@ -279,8 +297,16 @@ body[data-screen='settings'] {
   max-width: 100%;
   height: 81px; // Figma: 81px
   padding: 0 1.25rem;
+  margin-right: 94px; // Figma: 74px Abstand zur rechten Panel-Kante
   background-color: #f6f6f6;
   font-family: $font-family-base;
+  transition: width 250ms ease, margin-right 250ms ease;
+
+  // Nach dem Klick: erst breiter werden (dann kommen zeitverzögert die Werte).
+  &.is-expanded {
+    width: 660px;
+    margin-right: 0;
+  }
 
   // Graue Verlängerung an der rechten Kante (gleiche Farbe + Höhe).
   // Wächst beim Hovern des Start-Buttons nach rechts heraus — der Inhalt
@@ -305,15 +331,27 @@ body[data-screen='settings'] {
     display: flex;
     align-items: center;
     gap: 42px; // Figma: 42px zwischen den Schritten
+    transition: opacity 250ms ease; // sanftes Einblenden der neuen Werte
+
+    // Sofort ausblenden (kein Fade), während der Stepper breiter wird.
+    &.is-hidden {
+      opacity: 0;
+      transition: none;
+    }
   }
 
   &__item {
-    cursor: pointer;
+    cursor: default; // standardmäßig nicht klickbar (erst wenn alles gewählt ist)
     position: relative;
     font-family: $font-family-base; // Almarai
     font-weight: 400; // Figma: Regular
     font-size: 1.25rem; // Figma: 20px
     line-height: 1; // Figma: 100%
+  }
+
+  // Klickbar (pointer) nur, wenn Spieler + Größe gewählt sind und noch nicht aufgeklappt.
+  &.is-ready:not(.is-expanded) &__item {
+    cursor: pointer;
   }
 
   // Gelber Schrägstrich (gedrehter Balken) mittig im 42px-Abstand.
@@ -326,6 +364,14 @@ body[data-screen='settings'] {
     height: 8px; // Figma: 8px dick
     background-color: $color-accent-yellow;
     transform: translate(-50%, -50%) rotate(109.33deg); // Figma: -109.33° (CSS gespiegelt)
+  }
+
+  // Im Wert-Modus (nach Klick): Trennstrich aus dem Figma-Asset (Line 4).
+  &__item.is-value:not(:first-child)::before {
+    width: 37px; // Figma: Line 4 (37 × 60)
+    height: 60px;
+    background: url('/assets/icons/line-4.svg') center / contain no-repeat;
+    transform: translate(-50%, -50%); // Winkel steckt bereits im SVG
   }
 
   &__start {

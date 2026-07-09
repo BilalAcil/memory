@@ -8,6 +8,16 @@
   color: $color-text-light;
   background-color: var(--game-bg);
   gap: 54px; // Abstand Header <-> Spielfeld
+  cursor: none; // nativen Cursor ausblenden – der Follower übernimmt
+
+  // Cursor-Farbe folgt dem aktiven Spieler.
+  &[data-current-player='blue'] {
+    --cursor-color: #2bb1ff;
+  }
+
+  &[data-current-player='orange'] {
+    --cursor-color: #f58e39;
+  }
 
   &[data-theme='code-vibes'] {
     --game-bg: #303131;
@@ -25,6 +35,31 @@
     --game-exit-bg: rgba(255, 255, 255, 0.1);
     --score-icon-w: 1.5rem; // TODO: Games-Maße einsetzen
     --score-icon-h: 1.25rem; // TODO: Games-Maße einsetzen
+  }
+}
+
+// --- Cursor-Follower: farbiger Ring, der der Maus folgt (Farbe = aktiver Spieler) ---
+.game__cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px; // auf den Mauspunkt zentrieren
+  border: 2px solid var(--cursor-color);
+  border-radius: 50%;
+  background-color: color-mix(in srgb, var(--cursor-color) 30%, transparent);
+  pointer-events: none; // fängt keine Klicks ab
+  opacity: 0; // erst sichtbar, wenn die Maus über dem Spielfeld ist
+  transition:
+    transform 90ms ease-out, // sanftes Nachziehen
+    background-color 250ms ease, // weicher Farbwechsel beim Spielerwechsel
+    border-color 250ms ease,
+    opacity 150ms ease;
+
+  &.is-visible {
+    opacity: 1;
   }
 }
 
@@ -77,6 +112,14 @@
   }
 }
 
+.score__value {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .game__turn {
   display: flex;
   align-items: center;
@@ -125,13 +168,50 @@
 
 // --- Spielfeld: Grid mit dynamischer Spaltenzahl (--cols kommt aus dem TS) ---
 .game__board {
+  position: relative; // Bezug für die Führungs-Pills
   display: grid;
   grid-template-columns: repeat(var(--cols), auto); // Spalten so breit wie die Karten
-  gap: clamp(0.5rem, 1.5vw, 1rem);
+  gap: var(--board-gap); // pro Spielfeldgröße gesetzt (aus dem TS)
   place-content: center; // Karten mittig im Board
-  width: 33.125rem; // 530px
-  height: 33.125rem; // 530px
+  width: var(--board-w); // Board-Maße je Spielfeldgröße (16/24/36)
+  height: var(--board-h);
   margin: 0 auto;
+
+  // Pills nur sichtbar, solange die Maus über dem Spielfeld ist.
+  &:hover .game__col-indicator,
+  &:hover .game__row-indicator {
+    opacity: 1;
+  }
+}
+
+// Führungs-Pill oben: gleitet horizontal zur Spalte der gehoverten Karte.
+.game__col-indicator {
+  position: absolute;
+  top: -1.75rem; // oberhalb des Boards
+  left: 0;
+  width: 1.75rem;
+  height: 0.75rem;
+  border-radius: 999px;
+  background-color: var(--cursor-color);
+  transform: translateX(-50%); // auf die Spaltenmitte zentrieren
+  opacity: 0;
+  pointer-events: none;
+  transition: left 150ms ease, opacity 150ms ease, background-color 250ms ease;
+}
+
+// Führungs-Pill links: gleitet vertikal zur Zeile der gehoverten Karte.
+.game__row-indicator {
+  position: absolute;
+  left: -1.75rem; // links neben dem Board
+  top: 0;
+  width: 0.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  background-color: var(--cursor-color);
+  transform: translateY(-50%); // auf die Zeilenmitte zentrieren
+  opacity: 0;
+  pointer-events: none;
+  transition: top 150ms ease, opacity 150ms ease, background-color 250ms ease;
 }
 
 // --- Karte mit 3D-Flip ---
@@ -140,6 +220,7 @@
   height: 7.5rem; // 120px
   padding: 0;
   border: none;
+  border-radius: 12px; // damit der Match-Glow den runden Karten folgt
   background: none;
   cursor: pointer;
   perspective: 800px; // 3D-Tiefe für die Drehung
@@ -158,6 +239,15 @@
     transform: rotateY(180deg);
   }
 
+  // Gefundenes Paar: kurz abheben + glänzen (Theme-Farbe) …
+  &.is-matched {
+    animation: card-match 650ms ease;
+    // … danach sanft auf 50% abdunkeln (Delay = Animationsdauer, damit es erst
+    // nach dem Effekt startet).
+    opacity: 0.1;
+    transition: opacity 300ms ease 650ms;
+  }
+
   &__face {
     position: absolute;
     inset: 0;
@@ -169,11 +259,38 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transition: opacity 150ms ease, border-radius 150ms ease;
     }
   }
 
   // Vorderseite liegt anfangs „hinten" und wird durch den Flip sichtbar.
   &__face--front {
     transform: rotateY(180deg);
+  }
+
+  // Aktive (noch nicht gefundene) Karte beim Hovern: Bild abdunkeln + runde Ecken.
+  &:not(.is-matched):hover .card__face img {
+    opacity: 0.5;
+    border-radius: 10px;
+  }
+}
+
+// Match-Effekt: Karte hebt kurz ab und glänzt in der Theme-Akzentfarbe.
+@keyframes card-match {
+  0% {
+    transform: translateY(0);
+    box-shadow: 0 0 0 transparent;
+  }
+
+  40% {
+    transform: translateY(-14px); // abheben
+    box-shadow:
+      0 12px 22px rgba(0, 0, 0, 0.4), // Schatten beim Abheben
+      0 0 18px 2px var(--game-accent); // Glanz in der Theme-Farbe
+  }
+
+  100% {
+    transform: translateY(0);
+    box-shadow: 0 0 0 transparent;
   }
 }
