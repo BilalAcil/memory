@@ -2,6 +2,7 @@
 
 // --- Grundgerüst + Theme-Farben (ein Regelwerk, zwei Ausprägungen über CSS-Variablen) ---
 .game {
+  position: relative; // Bezug für das Glanz-Overlay (.game__flash)
   min-height: 100%;
   display: flex;
   flex-direction: column;
@@ -63,6 +64,51 @@
   }
 }
 
+// --- Glanz bei einem Paar: diagonaler Lichtstreifen in Spielerfarbe ---
+// Zieht von links oben quer nach rechts unten über die gesamte Section.
+.game__flash {
+  position: absolute;
+  inset: 0;
+  z-index: 5; // über den Karten, unter dem Cursor-Follower (z-index: 10)
+  pointer-events: none;
+  opacity: 0;
+  // Schmaler Lichtstreifen (135deg = Richtung rechts unten), Rest transparent.
+  background: linear-gradient(
+    135deg,
+    transparent 42%,
+    color-mix(in srgb, var(--cursor-color) 55%, transparent) 50%,
+    transparent 58%
+  );
+  background-size: 250% 250%;
+  background-repeat: no-repeat;
+  mix-blend-mode: screen; // wirkt wie ein aufhellender Glanz
+
+  &.is-active {
+    animation: game-flash 850ms ease;
+  }
+}
+
+// Der Streifen wandert diagonal von links oben (0% 0%) nach rechts unten (100% 100%).
+@keyframes game-flash {
+  0% {
+    opacity: 0;
+    background-position: 0% 0%;
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  75% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    background-position: 100% 100%;
+  }
+}
+
 // --- Header: drei Zonen (Punkte links, aktiver Spieler mittig, Exit rechts) ---
 .game__header {
   display: flex;
@@ -70,6 +116,7 @@
   justify-content: space-between;
   gap: $space-md;
   padding: clamp(0.75rem, 2vw, 1.5rem) clamp(1.5rem, 4vw, 3rem);
+  cursor: default; // im Header wieder der native Cursor (kein farbiger Punkt)
 }
 
 // Container für Punktestände (links) + aktiver Spieler (mitte).
@@ -176,6 +223,7 @@
   width: var(--board-w); // Board-Maße je Spielfeldgröße (16/24/36)
   height: var(--board-h);
   margin: 0 auto;
+  cursor: default; // im Spielfeld der native Cursor (Karten überschreiben mit pointer)
 
   // Pills nur sichtbar, solange die Maus über dem Spielfeld ist.
   &:hover .game__col-indicator,

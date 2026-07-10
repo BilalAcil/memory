@@ -82,6 +82,9 @@ export function renderGame(root: HTMLElement): void {
       <!-- Farbiger Cursor-Follower (folgt der Maus, Farbe = aktiver Spieler) -->
       <div class="game__cursor" aria-hidden="true"></div>
 
+      <!-- Glanz bei einem Paar: zieht diagonal in der Spielerfarbe über die Section -->
+      <div class="game__flash" aria-hidden="true"></div>
+
       <header class="game__header">
         <!-- LINKS + MITTE zusammen in einem Container -->
         <div class="game__status">
@@ -157,6 +160,37 @@ export function renderGame(root: HTMLElement): void {
     });
     section.addEventListener('pointerenter', () => cursor.classList.add('is-visible'));
     section.addEventListener('pointerleave', () => cursor.classList.remove('is-visible'));
+
+    // Über Header und Spielfeld verschwindet der farbige Punkt (dort gilt der native Cursor).
+    [root.querySelector<HTMLElement>('.game__header'), root.querySelector<HTMLElement>('.game__board')]
+      .forEach((zone) => {
+        zone?.addEventListener('pointerenter', () => cursor.classList.remove('is-visible'));
+        zone?.addEventListener('pointerleave', () => cursor.classList.add('is-visible'));
+      });
+  }
+
+  // --- Glanz-Effekt: diagonaler Lichtstreifen in Spielerfarbe über die ganze Section ---
+  const flash = root.querySelector<HTMLElement>('.game__flash');
+
+  /** Spielt den Glanz einmal ab; das Promise löst sich, wenn die Animation vorbei ist. */
+  function playFlash(): Promise<void> {
+    return new Promise((resolve) => {
+      if (!flash) {
+        resolve();
+        return;
+      }
+      flash.classList.remove('is-active');
+      void flash.offsetWidth; // Reflow → Animation lässt sich neu starten
+      flash.classList.add('is-active');
+      flash.addEventListener(
+        'animationend',
+        () => {
+          flash.classList.remove('is-active');
+          resolve();
+        },
+        { once: true },
+      );
+    });
   }
 
   // --- Aufdeck-/Match-Logik ---
@@ -183,13 +217,19 @@ export function renderGame(root: HTMLElement): void {
     lockBoard = true;
 
     if (first.dataset.motif === second.dataset.motif) {
-      // Paar: Punkt für den aktuellen Spieler – er bleibt dran.
-      addPoint();
-      // Nach dem Flip kurz glänzen + abheben, dann offen liegen lassen.
+      // Paar gefunden – der Spieler bleibt dran. Der Punkt kommt erst nach den Effekten.
       window.setTimeout(() => {
+        // 1. Karten springen kurz + blenden auf 0.1 aus.
         first.classList.add('is-matched');
         second.classList.add('is-matched');
-        lockBoard = false;
+        // 2. Nach Sprung (650ms) + Ausblenden (300ms) den Glanz diagonal über die Section ziehen.
+        window.setTimeout(() => {
+          playFlash().then(() => {
+            // 3. Erst nach dem Glanz den Punkt vergeben.
+            addPoint();
+            lockBoard = false;
+          });
+        }, 950);
       }, 450);
     } else {
       // Kein Paar: nach kurzer Zeit beide wieder verdecken und Spieler wechseln.
