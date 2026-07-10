@@ -1,0 +1,277 @@
+@use '../tokens' as *;
+
+// Game-Over-Box mittig im Frame (der dunkle Hintergrund kommt vom body).
+body[data-screen='gameover'] #app {
+  position: relative; // Anker für das Winner-Overlay
+  display: grid;
+  place-items: center;
+}
+
+// --- Game-Over ("Game over_01"): Titel + Endstand, 990×370 mit 124px Abstand ---
+.gameover {
+  width: 990px; // Figma: 990px
+  max-width: 100%;
+  height: 370px; // Figma: 370px
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 124px; // Figma: 124px zwischen Titel- und Ergebnis-Div
+  color: $color-text-light;
+  // "Move in Top": ohne Verzögerung, 500ms ease-out von oben herein.
+  animation: gameover-move-in 500ms ease-out;
+
+  // Code-Vibes-Theme.
+  &[data-theme='code-vibes'] {
+    --go-accent: #5ed6bf; // helles Türkis für den Schriftzug
+    --go-scores-bg: #86e9d633; // halbtransparente Punkte-Box
+  }
+
+  // Gaming-Theme (Werte folgen, sobald das Design steht).
+  &[data-theme='gaming'] {
+    --go-accent: #ff5c8a; // TODO: exakten Games-Wert einsetzen
+    --go-scores-bg: rgba(255, 255, 255, 0.1); // TODO
+  }
+}
+
+@keyframes gameover-move-in {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// Ergebnis-Div: "Final score" über der Punkte-Box.
+.gameover__result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+// Großer "Game over"-Schriftzug in der Theme-Akzentfarbe, mit Glow + Tiefe.
+.gameover__title {
+  font-family: $font-family-heading; // Red Rose
+  font-weight: 700;
+  font-size: clamp(3.5rem, 13vw, 8rem);
+  line-height: 1;
+  color: var(--go-accent);
+  // Weißer Schlagschatten nach oben (kein Glow/Schein).
+  text-shadow: 0 -2px 2px #ffffff;
+}
+
+// "Final score"-Label über der Punkte-Box.
+.gameover__subtitle {
+  font-family: $font-family-heading; // Red Rose
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+// Punkte-Box beider Spieler (wie im Game-Header).
+.gameover__scores {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem; // 20px
+  padding: 1.0625rem 1.25rem; // 17px / 20px
+  background: var(--go-scores-bg);
+}
+
+.gameover__score {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-sm;
+  font-family: $font-family-heading; // Red Rose
+  font-weight: 700;
+  font-size: 1.5rem; // 24px
+
+  img {
+    height: 1.25rem; // ~20px
+    width: auto;
+  }
+
+  // Textfarbe je Spieler (Icons sind bereits farbig).
+  &[data-color='blue'] {
+    color: #2bb1ff;
+  }
+
+  &[data-color='orange'] {
+    color: #f58e39;
+  }
+}
+
+// --- Winner_01: Overlay, das nach 1200ms von oben hereinfährt ---
+.winner {
+  position: absolute;
+  inset: 0;
+  z-index: 5; // liegt über der Game-over-Box
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden; // Konfetti ragt oben heraus – abschneiden
+  background-color: #303131; // dunkler Hintergrund (Theme-Wert folgt)
+  color: $color-text-light;
+  // "Move in Top": 1200ms warten, dann 500ms ease-out von oben herein.
+  // backwards = Start-Zustand (oben, unsichtbar) gilt schon während der Verzögerung.
+  animation: gameover-move-in 500ms ease-out 1200ms backwards;
+
+  // Gewinner-Farbe für Name + Icon-Akzent.
+  &[data-winner='blue'] {
+    --winner-color: #2bb1ff;
+  }
+
+  &[data-winner='orange'] {
+    --winner-color: #f58e39;
+  }
+}
+
+// Konfetti oben (Maße + Position aus Figma).
+.winner__confetti {
+  position: absolute;
+  top: -32px; // Figma: -32px
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1230px; // Figma: 1230px
+  height: 360px; // Figma: 360px
+  pointer-events: none;
+}
+
+// Inhalts-Spalte: Text, Icon, Button (mittig, 64px Abstand).
+// Abstand & Gap schrumpfen auf kleineren Displays mit, damit alles sichtbar bleibt.
+.winner__content {
+  max-width: 100%;
+  margin-top: clamp(1.5rem, 30vh, 320px); // Figma: top 320px (auf kleinen Displays weniger)
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.5rem, 5vh, 64px); // Figma: 64px zwischen Text / Icon / Button
+}
+
+// Text-Block: "The winner is" + Gewinnername (10px Abstand).
+.winner__text {
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px; // Figma: 10px
+  text-align: center;
+}
+
+.winner__intro {
+  font-family: $font-family-heading; // Red Rose
+  font-weight: 400; // Figma: Regular
+  font-size: 2.5rem; // Figma: 40px
+  line-height: 1; // Figma: 100%
+  text-align: center;
+}
+
+// Gewinnername in der Gewinner-Farbe.
+.winner__name {
+  font-family: $font-family-heading; // Red Rose
+  font-weight: 700;
+  font-size: 3.75rem; // Figma: 60px
+  line-height: 1; // Figma: 100%
+  text-align: center;
+  color: var(--winner-color);
+}
+
+// Großes Spieler-Icon (farbiges Label-SVG) – skaliert auf kleinen Displays mit.
+.winner__icon {
+  width: 200px; // immer gleiche Breite wie .winner__back
+  height: clamp(150px, 33vh, 250px); // Figma: 250px
+  object-fit: contain; // Seitenverhältnis erhalten (kein Verzerren, mittig im Kasten)
+}
+
+// --- Draw_01: Unentschieden-Overlay (fährt wie der Winner-Frame von oben herein) ---
+.draw {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; // ohne Konfetti mittig im Frame
+  background-color: #303131; // dunkler Hintergrund (Theme-Wert folgt)
+  color: $color-text-light;
+  animation: gameover-move-in 500ms ease-out 1200ms backwards;
+
+  // Akzentfarbe (Button-Rahmen/Hover) = Theme-Farbe.
+  &[data-theme='code-vibes'] {
+    --winner-color: #5ed6bf;
+  }
+
+  &[data-theme='gaming'] {
+    --winner-color: #ff5c8a;
+  }
+}
+
+// Inhalts-Spalte: Text, Icon, Button (mittig, 64px Abstand).
+.draw__content {
+  width: 420px; // Figma: 420px
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.5rem, 5vh, 64px); // Figma: 64px
+}
+
+// Text-Block: "It's a" + "DRAW"-Schriftzug (12px Abstand).
+.draw__text {
+  width: 420px; // Figma: 420px
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px; // Figma: 12px
+  text-align: center;
+}
+
+.draw__intro {
+  font-family: $font-family-heading; // Red Rose
+  font-weight: 400; // Figma: Regular
+  font-size: 2.5rem; // Figma: 40px
+  line-height: 1; // Figma: 100%
+}
+
+// "DRAW"-Wortmarke (SVG).
+.draw__word {
+  width: 420px; // Figma: 420px
+  max-width: 100%;
+  height: 80px; // Figma: 80px
+  object-fit: contain; // Seitenverhältnis erhalten
+}
+
+// Waage-Icon (SVG) – skaliert auf kleinen Displays mit.
+.draw__icon {
+  width: 340px; // Figma: 340px
+  max-width: 100%;
+  height: clamp(180px, 34vh, 270px); // Figma: 270px
+  object-fit: contain; // Seitenverhältnis erhalten (kein Verzerren)
+}
+
+// "Back to start"-Button.
+.winner__back {
+  width: 200px; // Figma: 200px
+  height: 60px; // Figma: 60px
+  padding: 16px 24px; // Figma: 16px / 24px
+  border: 1px solid var(--winner-color); // Figma: 1px (Farbe vorläufig)
+  background-color: #3f6b5e; // vorläufig – exakter Wert folgt
+  color: $color-text-light;
+  font-family: $font-family-heading; // Red Rose
+  font-weight: 700;
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: box-shadow 250ms ease;
+
+  // Gleicher Hover wie .game__exit: verdickter Rahmen + Glow + Schlagschatten.
+  &:hover {
+    box-shadow:
+      0 0 0 2px var(--winner-color), // verdickter Rahmen (Ring außen)
+      0 0 5px var(--winner-color), // dezenter Glanz (Glow)
+      5px 5px 8px rgba(167, 135, 135, 0.45); // Schlagschatten nach rechts & unten
+  }
+}

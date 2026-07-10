@@ -1,5 +1,5 @@
 import { navigateTo } from '../router';
-import { settings, type ThemeId, type PlayerColor } from '../state';
+import { settings, setGameResult, type ThemeId, type PlayerColor } from '../state';
 
 // Theme-spezifische Datei-Pfade der Kartenmotive (Vorderseiten-Präfix + Rückseite).
 // Die Dateinamen unterscheiden sich pro Theme, deshalb hier zentral gemappt.
@@ -207,6 +207,17 @@ export function renderGame(root: HTMLElement): void {
   // --- Aufdeck-/Match-Logik ---
   let firstCard: HTMLButtonElement | null = null; // erste aufgedeckte Karte (wartet auf die zweite)
   let lockBoard = false; // blockiert Klicks während Vergleich/Animation
+  let matchedPairs = 0; // Anzahl bereits gefundener Paare
+  const totalPairs = boardSize / 2; // Spielende, wenn alle gefunden sind
+
+  /** Ende der Partie: Gewinner/Verlierer bestimmen und zum Game-Over wechseln. */
+  function endGame(): void {
+    const isDraw = scores.blue === scores.orange; // Gleichstand → Draw-Frame
+    const winner: PlayerColor = scores.blue >= scores.orange ? 'blue' : 'orange';
+    const loser: PlayerColor = winner === 'blue' ? 'orange' : 'blue';
+    setGameResult({ scores: { ...scores }, winner, loser, isDraw });
+    navigateTo('gameover');
+  }
 
   function handleCardClick(card: HTMLButtonElement): void {
     // Ignorieren, wenn gesperrt oder Karte schon offen/gefunden.
@@ -238,7 +249,13 @@ export function renderGame(root: HTMLElement): void {
           playFlash().then(() => {
             // 3. Erst nach dem Glanz den Punkt vergeben.
             addPoint();
-            lockBoard = false;
+            matchedPairs += 1;
+            // Alle Paare gefunden → Partie beenden, sonst weiterspielen.
+            if (matchedPairs === totalPairs) {
+              endGame();
+            } else {
+              lockBoard = false;
+            }
           });
         }, 950);
       }, 450);
@@ -300,5 +317,19 @@ export function renderGame(root: HTMLElement): void {
   // Klick auf den abgedunkelten Hintergrund schließt ebenfalls.
   modal?.addEventListener('click', (event) => {
     if (event.target === modal) closeModal();
+  });
+
+  // --- Abkürzung für die Abgabe/Demo ---
+  // Klick auf das Spieler-Icon deckt alle Karten auf und springt zum Game-Over,
+  // damit man den Endscreen ansehen kann, ohne durchspielen zu müssen.
+  turnIcon?.addEventListener('click', () => {
+    if (lockBoard) return;
+    lockBoard = true;
+    const allCards = root.querySelectorAll<HTMLButtonElement>('.card');
+    allCards.forEach((card) => card.classList.add('is-flipped')); // alle aufdecken
+    window.setTimeout(() => {
+      allCards.forEach((card) => card.classList.add('is-matched')); // Match-Effekt
+      window.setTimeout(endGame, 700); // danach Game-Over anzeigen
+    }, 700);
   });
 }

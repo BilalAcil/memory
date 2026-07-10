@@ -18,3 +18,19 @@ export const settings: GameSettings = {
   player: null,
   boardSize: null,
 };
+
+// === Ergebnis der letzten Partie ===
+// Wird vom Game-Screen gesetzt (wenn alle Paare gefunden sind) und vom
+// Game-Over-Screen gelesen: Punktestände, Gewinner und Verlierer.
+export interface GameResult {
+  scores: Record<PlayerColor, number>;
+  winner: PlayerColor; // meiste Punkte (bei Gleichstand irrelevant, siehe isDraw)
+  loser: PlayerColor;  // wenigste Punkte
+  isDraw: boolean;     // true = Gleichstand (Draw-Frame statt Winner-Frame)
+}
+
+export let gameResult: GameResult | null = null;
+
+export function setGameResult(result: GameResult): void {
+  gameResult = result;
+}
