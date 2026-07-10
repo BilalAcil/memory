@@ -109,6 +109,128 @@
   }
 }
 
+// --- Exit-Bestätigung (Modal über der ganzen Section) ---
+.game__modal {
+  position: fixed;
+  inset: 0;
+  z-index: 20; // über Cursor-Follower (10) und Glanz (5)
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.45); // Hintergrund abdunkeln
+  cursor: default; // im Popup der native Cursor
+
+  &.is-open {
+    display: flex;
+  }
+}
+
+// Cursor-Punkt aus, solange das Popup offen ist.
+.game.is-modal-open {
+  cursor: default;
+
+  .game__cursor {
+    opacity: 0;
+  }
+}
+
+.game__dialog {
+  width: 540px; // Figma: 540px
+  height: 270px; // Figma: 270px
+  max-width: 90vw;
+  padding: 2.5rem; // Figma: 40px
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3.375rem; // Figma: 54px zwischen Titel und Buttons
+  background-color: #ffffff;
+  color: #303131;
+  text-align: center;
+}
+
+// Beim Öffnen fährt der Dialog von oben herein.
+.game__modal.is-open .game__dialog {
+  animation: dialog-move-in 300ms ease-out;
+}
+
+@keyframes dialog-move-in {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// Beim Schließen fährt der Dialog wieder nach oben heraus.
+.game__modal.is-closing .game__dialog {
+  animation: dialog-move-out 300ms ease-in forwards;
+}
+
+@keyframes dialog-move-out {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+.game__dialog-title {
+  font-family: $font-family-heading; // Red Rose
+  font-weight: 700;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  line-height: 1.25;
+}
+
+.game__dialog-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.game__dialog-btn {
+  padding: 0.9rem 1.75rem;
+  font-family: $font-family-heading; // Red Rose
+  font-weight: 700;
+  font-size: 1.25rem;
+  border: 2px solid var(--game-accent);
+  cursor: pointer;
+  // Kein Übergang – Hover-Zustand greift sofort.
+
+  // Primär: gefüllt in der Theme-Farbe (weiterspielen).
+  &--stay {
+    background-color: var(--game-accent);
+    color: #ffffff;
+
+    // Hover: heller werden + Rahmen hervorheben.
+    &:hover {
+      background-color: color-mix(in srgb, var(--game-accent) 60%, #ffffff);
+      box-shadow: 0 0 0 2px var(--game-accent);
+    }
+  }
+
+  // Sekundär: heller Hintergrund mit farbigem Rand + Text (verlassen).
+  &--leave {
+    background-color: color-mix(in srgb, var(--game-accent) 12%, #ffffff);
+    color: var(--game-accent);
+
+    // Hover: etwas dunkler, dickerer Rahmen + Schlagschatten nach rechts & unten.
+    &:hover {
+      background-color: color-mix(in srgb, var(--game-accent) 25%, #ffffff);
+      box-shadow:
+        0 0 0 2px var(--game-accent), // Rahmen optisch verdicken
+        5px 5px 8px rgba(0, 0, 0, 0.25); // Schlagschatten rechts & unten
+    }
+  }
+}
+
 // --- Header: drei Zonen (Punkte links, aktiver Spieler mittig, Exit rechts) ---
 .game__header {
   display: flex;

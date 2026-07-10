@@ -121,6 +121,17 @@ export function renderGame(root: HTMLElement): void {
         ${indicatorsHtml}
         ${cardsHtml}
       </div>
+
+      <!-- Exit-Bestätigung (erscheint beim Klick auf "Exit game") -->
+      <div class="game__modal" aria-hidden="true">
+        <div class="game__dialog" role="dialog" aria-modal="true" aria-labelledby="quit-title">
+          <h2 class="game__dialog-title" id="quit-title">Are you sure you want to quit the game?</h2>
+          <div class="game__dialog-actions">
+            <button class="game__dialog-btn game__dialog-btn--stay" type="button">Back to game</button>
+            <button class="game__dialog-btn game__dialog-btn--leave" type="button">Exit game</button>
+          </div>
+        </div>
+      </div>
     </section>
   `;
 
@@ -255,8 +266,39 @@ export function renderGame(root: HTMLElement): void {
     });
   });
 
-  // Exit → vorerst zurück zu den Settings (Bestätigungs-Popup folgt später).
+  // --- Exit-Bestätigung: Popup öffnen/schließen ---
+  const modal = root.querySelector<HTMLElement>('.game__modal');
+
+  function openModal(): void {
+    modal?.classList.add('is-open');
+    section?.classList.add('is-modal-open'); // Cursor-Punkt aus, nativer Cursor an
+  }
+
+  function closeModal(): void {
+    if (!modal) return;
+    // Erst die Herausfahr-Animation abspielen, dann tatsächlich ausblenden.
+    modal.classList.add('is-closing');
+    const dialog = modal.querySelector<HTMLElement>('.game__dialog');
+    const finish = (): void => {
+      modal.classList.remove('is-open', 'is-closing');
+      section?.classList.remove('is-modal-open');
+    };
+    if (dialog) {
+      dialog.addEventListener('animationend', finish, { once: true });
+    } else {
+      finish();
+    }
+  }
+
+  root.querySelector<HTMLButtonElement>('.game__exit')?.addEventListener('click', openModal);
+  // "Back to game" → Popup schließen, weiterspielen.
+  root.querySelector<HTMLButtonElement>('.game__dialog-btn--stay')?.addEventListener('click', closeModal);
+  // "Exit game" → zurück zu den Settings.
   root
-    .querySelector<HTMLButtonElement>('.game__exit')
+    .querySelector<HTMLButtonElement>('.game__dialog-btn--leave')
     ?.addEventListener('click', () => navigateTo('settings'));
+  // Klick auf den abgedunkelten Hintergrund schließt ebenfalls.
+  modal?.addEventListener('click', (event) => {
+    if (event.target === modal) closeModal();
+  });
 }
