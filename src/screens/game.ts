@@ -9,8 +9,8 @@ const THEME_CARDS: Record<ThemeId, { prefix: string; back: string }> = {
     back: '/assets/cards/code-vibes/Code_Vibes_Card_back.png',
   },
   gaming: {
-    prefix: '/assets/cards/gaming/Games_themes_Card_',
-    back: '/assets/cards/gaming/Games_themes_Card_back.png',
+    prefix: '/assets/cards/gaming/k',
+    back: '/assets/cards/gaming/back-site.png',
   },
 };
 
@@ -20,6 +20,11 @@ const BOARD: Record<number, { cols: number; width: number; height: number; gap: 
   16: { cols: 4, width: 530, height: 530, gap: 16 },
   24: { cols: 6, width: 750, height: 500, gap: 6 },
   36: { cols: 6, width: 750, height: 750, gap: 6 },
+};
+
+// Gaming-Theme: schmalere Karten (105px) → eigene Board-Maße (vorerst nur 16).
+const GAMING_BOARD: Record<number, { cols: number; width: number; height: number; gap: number }> = {
+  16: { cols: 4, width: 468, height: 528, gap: 16 },
 };
 
 /** Mischt ein Array zufällig (Fisher-Yates) und gibt eine neue Reihenfolge zurück. */
@@ -45,10 +50,12 @@ function buildDeck(boardSize: number): number[] {
  */
 export function renderGame(root: HTMLElement): void {
   const theme = settings.theme;
+  document.body.dataset.theme = theme; // Theme am body, damit der Frame-Hintergrund mitfärbt
   const player: PlayerColor = settings.player ?? 'blue';
   const boardSize = settings.boardSize ?? 16;
   const cards = THEME_CARDS[theme];
-  const board = BOARD[boardSize] ?? BOARD[16];
+  const board =
+    (theme === 'gaming' ? GAMING_BOARD[boardSize] : undefined) ?? BOARD[boardSize] ?? BOARD[16];
 
   // Führungs-Pills gibt es nur beim großen 36er-Board.
   const indicatorsHtml =
@@ -57,6 +64,11 @@ export function renderGame(root: HTMLElement): void {
          <span class="game__row-indicator" aria-hidden="true"></span>`
       : '';
   const headerBase = `/assets/header/${theme}`;
+
+  // Quelle des "Current player"-Icons: im Gaming-Theme ein weißer Bauer (die
+  // Spielerfarbe kommt vom Hintergrund), sonst das farbige Header-PNG je Spieler.
+  const turnIconSrc = (p: PlayerColor): string =>
+    theme === 'gaming' ? '/assets/icons/chess_pawn-White.svg' : `${headerBase}/player-${p}.png`;
 
   const deck = buildDeck(boardSize);
 
@@ -105,13 +117,14 @@ export function renderGame(root: HTMLElement): void {
         <!-- Aktiver Spieler -->
         <div class="game__turn">
           <span>Current player:</span>
-          <img class="game__turn-icon" src="${headerBase}/player-${player}.png" alt="${player}" />
+          <img class="game__turn-icon" src="${turnIconSrc(player)}" alt="${player}" />
         </div>
         </div>
 
         <!-- RECHTS: Exit -->
         <button class="game__exit" type="button">
-          <img src="${headerBase}/exit.png" alt="" />
+          <img class="game__exit-icon game__exit-icon--default" src="${headerBase}/exit.png" alt="" />
+          <img class="game__exit-icon game__exit-icon--hover" src="/assets/icons/move_item_2.png" alt="" />
           <span>Exit game</span>
         </button>
       </header>
@@ -127,8 +140,8 @@ export function renderGame(root: HTMLElement): void {
         <div class="game__dialog" role="dialog" aria-modal="true" aria-labelledby="quit-title">
           <h2 class="game__dialog-title" id="quit-title">Are you sure you want to quit the game?</h2>
           <div class="game__dialog-actions">
-            <button class="game__dialog-btn game__dialog-btn--stay" type="button">Back to game</button>
-            <button class="game__dialog-btn game__dialog-btn--leave" type="button">Exit game</button>
+            <button class="game__dialog-btn game__dialog-btn--stay" type="button">${theme === 'gaming' ? 'No, back to game' : 'Back to game'}</button>
+            <button class="game__dialog-btn game__dialog-btn--leave" type="button">${theme === 'gaming' ? 'Yes, quit game' : 'Exit game'}</button>
           </div>
         </div>
       </div>
@@ -157,7 +170,7 @@ export function renderGame(root: HTMLElement): void {
   function switchPlayer(): void {
     currentPlayer = currentPlayer === 'blue' ? 'orange' : 'blue';
     if (turnIcon) {
-      turnIcon.src = `${headerBase}/player-${currentPlayer}.png`;
+      turnIcon.src = turnIconSrc(currentPlayer);
       turnIcon.alt = currentPlayer;
     }
     section?.setAttribute('data-current-player', currentPlayer); // steuert die Cursor-Farbe

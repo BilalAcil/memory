@@ -1,5 +1,11 @@
 @use '../tokens' as *;
 
+// Gaming-Theme: auch der Frame-Hintergrund (body) außerhalb von #app färbt mit.
+// (Code-vibes nutzt den dunklen Standard-Hintergrund des body aus _base.scss.)
+body[data-screen='game'][data-theme='gaming'] {
+  background-color: #294f60;
+}
+
 // --- Grundgerüst + Theme-Farben (ein Regelwerk, zwei Ausprägungen über CSS-Variablen) ---
 .game {
   position: relative; // Bezug für das Glanz-Overlay (.game__flash)
@@ -30,7 +36,7 @@
   }
 
   &[data-theme='gaming'] {
-    --game-bg: #2e4a5a;
+    --game-bg: #294f60;
     --game-header-bg: #4a4a63;
     --game-accent: #{$color-theme-games};
     --game-exit-bg: rgba(255, 255, 255, 0.1);
@@ -73,12 +79,10 @@
   pointer-events: none;
   opacity: 0;
   // Schmaler Lichtstreifen (135deg = Richtung rechts unten), Rest transparent.
-  background: linear-gradient(
-    135deg,
-    transparent 42%,
-    color-mix(in srgb, var(--cursor-color) 55%, transparent) 50%,
-    transparent 58%
-  );
+  background: linear-gradient(135deg,
+      transparent 42%,
+      color-mix(in srgb, var(--cursor-color) 55%, transparent) 50%,
+      transparent 58%);
   background-size: 250% 250%;
   background-repeat: no-repeat;
   mix-blend-mode: screen; // wirkt wie ein aufhellender Glanz
@@ -231,6 +235,100 @@
   }
 }
 
+// --- Gaming-Theme: Exit-Dialog ---
+// Dialog-Fenster: kompakter, stärker abgerundet.
+.game[data-theme='gaming'] .game__dialog {
+  width: 480px; // Figma: 480px
+  height: 254px; // Figma: 254px
+  border-radius: 20px; // Figma: 20px
+  padding: 40px; // Figma: 40px
+  gap: 40px; // Figma: 40px zwischen Titel und Buttons
+}
+
+// Gaming: Dialog kommt von UNTEN herein (und fährt beim Schließen wieder nach unten).
+.game[data-theme='gaming'] .game__modal.is-open .game__dialog {
+  animation-name: dialog-move-in-bottom;
+}
+
+.game[data-theme='gaming'] .game__modal.is-closing .game__dialog {
+  animation-name: dialog-move-out-bottom;
+}
+
+@keyframes dialog-move-in-bottom {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes dialog-move-out-bottom {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+// Titel in Orbitron.
+.game[data-theme='gaming'] .game__dialog-title {
+  font-family: 'Orbitron', sans-serif; // Figma: Orbitron
+  font-weight: 700; // Figma: Bold
+  font-size: 28px; // Figma: 28px
+  line-height: 40px; // Figma: 40px
+  letter-spacing: 0.02em; // Figma: 2%
+  text-align: center;
+}
+
+// Linker Button ("No, back to game"): gefüllt in Pink.
+.game[data-theme='gaming'] .game__dialog-btn--stay {
+  width: 200px; // Figma: 200px
+  height: 44px; // Figma: 44px
+  padding: 12px 20px; // Figma: 12px / 20px
+  border: 3px solid #ed1b76; // Pink
+  border-radius: 10px; // Figma: 10px
+  background-color: #ed1b76; // Figma: Pink
+  color: #ffffff;
+  font-size: 1rem; // passt "No, back to game" in die 200px-Breite
+  line-height: 1;
+
+  // Hover: umkehren – weißer Hintergrund, pinker Rahmen + Text, mit Schlagschatten.
+  &:hover {
+    background-color: #ffffff;
+    border-color: #ed1b76;
+    color: #ed1b76;
+    box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.25); // Schlagschatten rechts & unten
+  }
+}
+
+// Rechter Button ("Yes, quit game"): heller Hintergrund mit pinkem Rahmen + Text.
+.game[data-theme='gaming'] .game__dialog-btn--leave {
+  width: 176px; // Figma: 176px
+  height: 44px; // Figma: 44px
+  padding: 12px 20px; // Figma: 12px / 20px
+  border: 2px solid #e71c4f; // Figma: 2px
+  border-radius: 10px; // Figma: 10px
+  background-color: #ed1b7614; // Figma: sehr transparentes Pink
+  color: #e71c4f; // Figma: Textfarbe
+  font-size: 1rem; // passt "Yes, quit game" in die 176px-Breite
+  line-height: 1;
+
+  // Hover: dickerer Rahmen, Hintergrund auf 12%, mit Schlagschatten.
+  &:hover {
+    border-width: 3px;
+    background-color: #ed1b761f; // ~12% Pink
+    box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.25); // Schlagschatten rechts & unten
+  }
+}
+
 // --- Header: drei Zonen (Punkte links, aktiver Spieler mittig, Exit rechts) ---
 .game__header {
   display: flex;
@@ -239,6 +337,32 @@
   gap: $space-md;
   padding: clamp(0.75rem, 2vw, 1.5rem) clamp(1.5rem, 4vw, 3rem);
   cursor: default; // im Header wieder der native Cursor (kein farbiger Punkt)
+}
+
+// Gaming-Theme: Header als abgerundete, halbtransparente Pink-Box (mittig).
+.game[data-theme='gaming'] .game__header {
+  position: relative; // Anker für das mittig positionierte "Current player"
+  width: 1220px; // Figma: 1220px
+  max-width: 100%;
+  height: 100px; // Figma: 100px
+  align-self: center; // horizontal im Spielfeld zentrieren
+  margin-top: 40px; // Figma: Abstand zur Frame-Oberkante
+  padding: 24px; // Figma: 24px
+  border-radius: 10px; // Figma: 10px
+  background-color: #fd96c933; // Figma: halbtransparentes Pink
+}
+
+// Gaming-Theme: Wrapper auflösen, damit Scores + Turn direkte Header-Kinder werden.
+.game[data-theme='gaming'] .game__status {
+  display: contents;
+}
+
+// "Current player" mittig im Header (unabhängig von Scores-/Exit-Breite).
+.game[data-theme='gaming'] .game__turn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 // Container für Punktestände (links) + aktiver Spieler (mitte).
@@ -255,6 +379,41 @@
   gap: 1.25rem; // 20px
   padding: 1.0625rem 1.25rem; // 17px / 20px
   background: #86e9d633; // Code-vibes (theme-spezifisch – Gaming-Wert später)
+}
+
+// Gaming-Theme: weiße Punkte-Box mit fester Größe + Radius.
+.game[data-theme='gaming'] .game__scores {
+  width: 180px; // Figma: 180px
+  height: 54px; // Figma: 54px
+  border-radius: 10px; // Figma: 10px
+  background: #ffffff; // Figma: Weiß
+}
+
+// Gaming-Theme: nur Icon + Zahl, keine "Blue"/"Orange"-Beschriftung.
+.game[data-theme='gaming'] .score__label {
+  display: none;
+}
+
+// Gaming-Theme: Score-Chip (Icon + Wert) mit festen Maßen.
+.game[data-theme='gaming'] .score {
+  width: 56px; // Figma: 56px
+  height: 38px; // Figma: 38px
+  gap: 8px; // Figma: 8px
+
+  img {
+    width: 22px; // Figma: 22px
+    height: 28px; // Figma: 28px
+  }
+}
+
+// Gaming-Theme: Punktewert in Orbitron.
+.game[data-theme='gaming'] .score__value {
+  width: auto; // feste 30px-Box aus dem Basis-Style aufheben
+  height: auto;
+  font-family: 'Orbitron', sans-serif; // Figma: Orbitron
+  font-weight: 700; // Figma: Bold
+  font-size: 30px; // Figma: 30px
+  line-height: 1; // Figma: 100%
 }
 
 .score {
@@ -305,6 +464,36 @@
   }
 }
 
+// Gaming-Theme: "Current player" in Orbitron, Icon als farbige Box mit weißem Bauer.
+.game[data-theme='gaming'] .game__turn {
+  width: 366px; // Figma: 366px
+  max-width: 100%;
+  height: 40px; // Figma: 40px
+  gap: 18px; // Figma: 18px
+  font-family: 'Orbitron', sans-serif; // Figma: Orbitron
+  font-weight: 700; // Figma: Bold
+  font-size: 32px; // Figma: 32px
+  line-height: 1; // Figma: 100%
+  letter-spacing: 0.07em; // Figma: 7%
+}
+
+.game[data-theme='gaming'] .game__turn-icon {
+  width: 42px; // Figma: 42px
+  height: 40px; // Figma: 40px
+  padding: 4px 8px; // Figma: 4px / 8px
+  border-radius: 3px; // Figma: 3px
+  object-fit: contain; // weißen Bauer unverzerrt in der Box
+}
+
+// Icon-Hintergrund = aktuelle Spielerfarbe.
+.game[data-theme='gaming'][data-current-player='blue'] .game__turn-icon {
+  background-color: #1faafc; // Figma: Blau
+}
+
+.game[data-theme='gaming'][data-current-player='orange'] .game__turn-icon {
+  background-color: #ea6900; // Figma: Orange
+}
+
 .game__exit {
   display: inline-flex;
   align-items: center;
@@ -333,6 +522,53 @@
     width: 1.875rem; // 30px
     height: 1.875rem; // 30px
   }
+}
+
+// Zweites Icon (Hover) ist standardmäßig aus – nur das Gaming-Theme tauscht es ein.
+.game__exit-icon--hover {
+  display: none;
+}
+
+// Gaming-Theme: Exit-Button mit fester Größe, dickerem Rahmen + Radius.
+.game[data-theme='gaming'] .game__exit {
+  width: 204px; // Figma: 196px
+  height: 54px; // Figma: 54px
+  gap: 10px; // Figma: 10px
+  padding: 12px 20px; // Figma: 12px / 20px
+  border: 2px solid #ed1b76; // Figma: 2px, Pink
+  border-radius: 10px; // Figma: 10px
+  background-color: #ed1b7614; // Figma: sehr transparentes Pink
+  transition: none; // Hover-Effekt sofort (ohne Ease)
+}
+
+// Gaming-Theme: beim Hovern (oder solange der Dialog offen ist) das andere Icon
+// zeigen (mit Schatten wie der Button).
+.game[data-theme='gaming'] .game__exit:hover .game__exit-icon--default,
+.game[data-theme='gaming'].is-modal-open .game__exit .game__exit-icon--default {
+  display: none;
+}
+
+.game[data-theme='gaming'] .game__exit:hover .game__exit-icon--hover,
+.game[data-theme='gaming'].is-modal-open .game__exit .game__exit-icon--hover {
+  display: inline-block;
+  filter: drop-shadow(5px 5px 8px rgba(0, 0, 0, 0.45)); // Schlagschatten rechts & unten
+}
+
+// Gaming-Theme: Schlagschatten des Buttons schwarz (Ring/Glow bleiben in Akzentfarbe).
+// Bleibt auch aktiv, solange der Exit-Dialog offen ist.
+.game[data-theme='gaming'] .game__exit:hover,
+.game[data-theme='gaming'].is-modal-open .game__exit {
+  box-shadow:
+    0 0 0 2px var(--game-accent), // verdickter Rahmen (Ring außen)
+    0 0 5px var(--game-accent), // dezenter Glanz (Glow)
+    5px 5px 8px rgba(0, 0, 0, 0.45); // schwarzer Schlagschatten rechts & unten
+}
+
+// Bei offenem Dialog den Exit-Button über das abgedunkelte Overlay heben,
+// damit sein "Hover"-Zustand sichtbar bleibt.
+.game[data-theme='gaming'].is-modal-open .game__exit {
+  position: relative;
+  z-index: 25; // über dem Modal-Overlay (z-index: 20)
 }
 
 // --- Spielfeld: Grid mit dynamischer Spaltenzahl (--cols kommt aus dem TS) ---
@@ -382,6 +618,25 @@
   opacity: 0;
   pointer-events: none;
   transition: top 150ms ease, opacity 150ms ease, background-color 250ms ease;
+}
+
+// Gaming-Theme: Karten etwas schmaler, mit dezentem Schatten (aus CSS).
+.game[data-theme='gaming'] .card {
+  width: 105px; // Figma: 105px
+  height: 120px; // Figma: 120px
+  box-shadow: 6px 6px 12px 0 #00000040; // Figma-Schlagschatten
+}
+
+// Gaming-Vorderseiten: heller Karten-Hintergrund, Motiv mittig (Bilder sind
+// unterschiedlich groß → contain, damit nichts beschnitten wird).
+.game[data-theme='gaming'] .card__face--front {
+  background-color: #f6f1f3; // heller Karten-Hintergrund
+  border-radius: 12px; // runde Ecken wie die Karte
+
+  img {
+    object-fit: contain; // Motiv vollständig zeigen, zentriert
+    padding: 16px; // etwas Abstand zum Kartenrand
+  }
 }
 
 // --- Karte mit 3D-Flip ---
