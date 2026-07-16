@@ -1,6 +1,6 @@
 # Memory
 
-Ein **Memory-Kartenspiel** als Abschlussprojekt der Developer Akademie – umgesetzt als
+Ein **Memory-Kartenspiel**, umgesetzt im Rahmen der Developer Akademie – als
 Single-Page-App mit **Vanilla TypeScript**, **SCSS** und **Vite** (ohne Framework).
 
 ## Features
