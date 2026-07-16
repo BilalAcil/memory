@@ -564,13 +564,6 @@ body[data-screen='game'][data-theme='gaming'] {
     5px 5px 8px rgba(0, 0, 0, 0.45); // schwarzer Schlagschatten rechts & unten
 }
 
-// Bei offenem Dialog den Exit-Button über das abgedunkelte Overlay heben,
-// damit sein "Hover"-Zustand sichtbar bleibt.
-.game[data-theme='gaming'].is-modal-open .game__exit {
-  position: relative;
-  z-index: 25; // über dem Modal-Overlay (z-index: 20)
-}
-
 // --- Spielfeld: Grid mit dynamischer Spaltenzahl (--cols kommt aus dem TS) ---
 .game__board {
   position: relative; // Bezug für die Führungs-Pills

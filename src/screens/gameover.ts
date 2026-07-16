@@ -8,12 +8,31 @@ import { settings, gameResult, type PlayerColor } from '../state';
  */
 export function renderGameOver(root: HTMLElement): void {
   const theme = settings.theme;
+  document.body.dataset.theme = theme; // Theme am body (färbt den Frame-Hintergrund im Gaming-Theme)
   // Fallback, falls der Screen ohne Ergebnis erreicht wird (im Spielfluss nicht der Fall).
   const winner: PlayerColor = gameResult?.winner ?? 'blue';
   const loser: PlayerColor = gameResult?.loser ?? 'orange';
   const scores = gameResult?.scores ?? { blue: 0, orange: 0 };
   const isDraw = gameResult?.isDraw ?? false;
   const headerBase = `/assets/header/${theme}`;
+
+  // Theme-abhängige Winner-Details: Gaming zeigt einen Pokal + "Home"-Button
+  // und den Namen in Groß-/Kleinschreibung ("Blue Player" statt "BLUE PLAYER").
+  const winnerIcon =
+    theme === 'gaming' ? '/assets/icons/pockal%201.png' : `/assets/icons/player_${winner}_label.svg`;
+  const backLabel = theme === 'gaming' ? 'Home' : 'Back to start';
+  const winnerName =
+    theme === 'gaming'
+      ? `${winner[0].toUpperCase()}${winner.slice(1)} Player`
+      : `${winner.toUpperCase()} PLAYER`;
+
+  // Draw-Frame: Gaming zeigt "DRAW" als Text (Orbitron) + eigenes pinkes Waage-Icon.
+  const drawWord =
+    theme === 'gaming'
+      ? '<span class="draw__word">DRAW</span>'
+      : '<img class="draw__word" src="/assets/icons/draw.svg" alt="Draw" />';
+  const drawIcon =
+    theme === 'gaming' ? '/assets/icons/draw_Icon.svg' : '/assets/icons/Scale_Icon.svg';
 
   // Ergebnis-Frame: bei Gleichstand der Draw-Frame, sonst der Winner-Frame.
   const resultFrame = isDraw
@@ -23,12 +42,12 @@ export function renderGameOver(root: HTMLElement): void {
       <div class="draw__content">
         <div class="draw__text">
           <p class="draw__intro">It's a</p>
-          <img class="draw__word" src="/assets/icons/draw.svg" alt="Draw" />
+          ${drawWord}
         </div>
 
-        <img class="draw__icon" src="/assets/icons/Scale_Icon.svg" alt="" />
+        <img class="draw__icon" src="${drawIcon}" alt="" />
 
-        <button class="winner__back" type="button">Back to start</button>
+        <button class="winner__back" type="button">${backLabel}</button>
       </div>
     </section>`
     : `
@@ -39,12 +58,12 @@ export function renderGameOver(root: HTMLElement): void {
       <div class="winner__content">
         <div class="winner__text">
           <p class="winner__intro">The winner is</p>
-          <h2 class="winner__name">${winner.toUpperCase()} PLAYER</h2>
+          <h2 class="winner__name">${winnerName}</h2>
         </div>
 
-        <img class="winner__icon" src="/assets/icons/player_${winner}_label.svg" alt="" />
+        <img class="winner__icon" src="${winnerIcon}" alt="" />
 
-        <button class="winner__back" type="button">Back to start</button>
+        <button class="winner__back" type="button">${backLabel}</button>
       </div>
     </section>`;
 

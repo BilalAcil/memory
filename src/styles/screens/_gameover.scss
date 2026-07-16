@@ -7,6 +7,11 @@ body[data-screen='gameover'] #app {
   place-items: center;
 }
 
+// Gaming-Theme: Frame-Hintergrund (body) in Teal, wie der Game-Screen.
+body[data-screen='gameover'][data-theme='gaming'] {
+  background-color: #294f60;
+}
+
 // --- Game-Over ("Game over_01"): Titel + Endstand, 990×370 mit 124px Abstand ---
 .gameover {
   width: 990px; // Figma: 990px
@@ -27,10 +32,60 @@ body[data-screen='gameover'] #app {
     --go-scores-bg: #86e9d633; // halbtransparente Punkte-Box
   }
 
-  // Gaming-Theme (Werte folgen, sobald das Design steht).
+  // Gaming-Theme.
   &[data-theme='gaming'] {
-    --go-accent: #ff5c8a; // TODO: exakten Games-Wert einsetzen
-    --go-scores-bg: rgba(255, 255, 255, 0.1); // TODO
+    --go-accent: #ed1b76; // Pink für "GAME OVER"
+    --go-scores-bg: #ffffff; // weiße Punkte-Box
+  }
+}
+
+// --- Gaming-Theme: "GAME OVER" + "Final score" in Orbitron ---
+.gameover[data-theme='gaming'] {
+  animation-name: gameover-move-in-bottom; // kommt von UNTEN herein (wie der Dialog)
+
+  .gameover__title {
+    font-family: 'Orbitron', sans-serif; // Figma: Orbitron
+    font-weight: 900; // Figma: Black
+    font-size: clamp(3.5rem, 13vw, 124px); // Figma: 124px (schrumpft auf kleinen Displays)
+    line-height: 1; // Figma: 100%
+    letter-spacing: 0.07em; // Figma: 7%
+    color: #ed1b76; // Figma: #ED1B76
+    text-shadow: none; // kein weißer Schatten (Code-vibes)
+  }
+
+  .gameover__subtitle {
+    font-family: 'Orbitron', sans-serif; // Figma: Orbitron
+    font-weight: 700; // Figma: Bold
+    font-size: 1.75rem; // Figma: 28px
+    line-height: 1; // Figma: 100%
+    letter-spacing: 0.07em; // Figma: 7%
+    color: #ffffff; // Figma: Weiß
+  }
+
+  // Weiße Punkte-Box (nur Icon + Zahl, keine "Blue"/"Orange"-Labels).
+  .gameover__scores {
+    width: 222px; // Figma: 222px
+    height: 66px; // Figma: 66px
+    justify-content: center; // Inhalt mittig in der Box
+    gap: 40px; // Figma: 40px
+    padding: 8px 16px; // Figma: 8px / 16px
+    border-radius: 10px; // Figma: 10px
+    background: #ffffff; // Figma: Weiß
+  }
+
+  .gameover__score-label {
+    display: none; // nur Icon + Zahl
+  }
+
+  .gameover__score {
+    font-family: 'Orbitron', sans-serif; // Zahlen in Orbitron
+    font-size: 2.5rem; // Figma: 40px
+    line-height: 1; // Figma: 100%
+
+    img {
+      width: 26px; // Figma: 26px
+      height: 32px; // Figma: 32px
+    }
   }
 }
 
@@ -44,6 +99,25 @@ body[data-screen='gameover'] #app {
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+// Gaming-Theme: Game-Over-Seite kommt von unten herein.
+@keyframes gameover-move-in-bottom {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// Gaming-Theme: auch Winner- und Draw-Frame kommen von unten (Verzögerung bleibt).
+.winner[data-theme='gaming'],
+.draw[data-theme='gaming'] {
+  animation-name: gameover-move-in-bottom;
 }
 
 // Ergebnis-Div: "Final score" über der Punkte-Box.
@@ -126,6 +200,121 @@ body[data-screen='gameover'] #app {
 
   &[data-winner='orange'] {
     --winner-color: #f58e39;
+  }
+}
+
+// --- Gaming-Theme: Winner-Frame (Teal, Orbitron, Pokal, kein Konfetti) ---
+.winner[data-theme='gaming'] {
+  justify-content: center; // ohne Konfetti mittig
+  background-color: #294f60; // Teal wie der Game-Screen
+
+  &[data-winner='blue'] {
+    --winner-color: #2298db; // Figma: Blau
+  }
+
+  &[data-winner='orange'] {
+    --winner-color: #ea6900; // Gaming-Orange
+  }
+
+  .winner__confetti {
+    display: none; // kein Konfetti im Gaming-Theme
+  }
+
+  .winner__content {
+    margin-top: 0; // ohne Konfetti mittig statt weit unten
+  }
+
+  .winner__intro {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700; // Figma: Bold
+    font-size: 1.75rem; // Figma: 28px
+    line-height: 1; // Figma: 100%
+    letter-spacing: 0.07em; // Figma: 7%
+    color: #ffffff;
+  }
+
+  .winner__name {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700; // Figma: Bold
+    font-size: 4rem; // Figma: 64px
+    line-height: 1; // Figma: 100%
+    letter-spacing: 0.07em; // Figma: 7%
+    text-shadow: 4px 4px 4px #00000040; // Figma
+    // Farbe kommt aus --winner-color
+  }
+
+  .winner__icon {
+    width: auto;
+    height: clamp(220px, 42vh, 344px); // Figma: 344px (schrumpft auf kleinen Displays)
+    max-width: 100%;
+    // kein CSS-Schatten – der Schlagschatten ist bereits ins PNG eingebacken
+  }
+
+}
+
+// Gaming-Theme: "Home"-Button – gilt für Winner- UND Draw-Frame.
+.winner[data-theme='gaming'] .winner__back,
+.draw[data-theme='gaming'] .winner__back {
+  width: 107px; // Figma: 107px
+  height: 49px; // Figma: 49px
+  gap: 10px; // Figma: 10px
+  padding: 12px 20px; // Figma: 12px / 20px
+  border: 2px solid #e71c4f; // Figma: 2px
+  border-radius: 10px; // Figma: 10px
+  background-color: transparent;
+  color: #ffffff;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700; // Figma: Bold
+  font-size: 20px; // Figma: 20px
+  line-height: 1; // Figma: 100%
+  letter-spacing: 0.04em; // Figma: 4%
+  transition: none; // Hover-Effekt sofort (ohne Ease)
+
+  // Hover: leichter Pink-Hintergrund, dickerer Rahmen, mit Schlagschatten.
+  &:hover {
+    background-color: #ed1b7614; // ~8% Pink
+    border-width: 3px;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.15); // dezenter Schlagschatten rechts & unten
+  }
+}
+
+// --- Gaming-Theme: Draw-Frame (Teal, Orbitron "DRAW", pinke Waage) ---
+.draw[data-theme='gaming'] {
+  background-color: #294f60; // Teal wie der Game-Screen
+
+  // Breiten aufheben, damit das große "DRAW" (128px) nicht in 420px umbricht.
+  .draw__content,
+  .draw__text {
+    width: auto;
+  }
+
+  .draw__intro {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700; // Figma: Bold
+    font-size: 1.75rem; // Figma: 28px
+    line-height: 1; // Figma: 100%
+    letter-spacing: 0.07em; // Figma: 7%
+    color: #ffffff;
+  }
+
+  // "DRAW" jetzt als Text (statt SVG) in Orbitron.
+  .draw__word {
+    width: auto;
+    height: auto;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700; // Figma: Bold
+    font-size: clamp(4rem, 14vw, 128px); // Figma: 128px
+    line-height: 1; // Figma: 100%
+    letter-spacing: 0.07em; // Figma: 7%
+    color: #ed1b76; // Figma: #ED1B76
+    text-shadow: 4px 4px 4px #00000040; // Figma
+  }
+
+  .draw__icon {
+    width: auto;
+    height: clamp(180px, 34vh, 272px); // Figma: 272px
+    max-width: 100%;
+    filter: drop-shadow(4px 4px 4px #00000040); // Figma-Schatten (folgt der Waage-Form)
   }
 }
 
