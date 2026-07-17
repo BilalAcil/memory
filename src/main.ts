@@ -1,5 +1,5 @@
 import './styles/style.scss';
 import { navigateTo } from './router';
 
-// App-Start: Beim Laden zeigen wir den Home-Screen an.
+// App start: show the home screen on load.
 navigateTo('home');

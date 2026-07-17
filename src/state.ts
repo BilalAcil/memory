@@ -1,36 +1,35 @@
-// === Zentraler App-Zustand (State) ===
-// Hier merkt sich die App die Auswahl aus den Settings.
-// Der Game-Screen liest diese Werte später aus, um das richtige Spielfeld aufzubauen.
+// Central app state: stores the selection made on the settings screen.
+// The game screen later reads these values to build the correct board.
 
 export type ThemeId = 'code-vibes' | 'gaming';
 export type PlayerColor = 'blue' | 'orange';
 export type BoardSize = 16 | 24 | 36;
 
+/** User selection from the settings screen. */
 export interface GameSettings {
-  theme: ThemeId;               // gewähltes Layout/Theme (von Anfang an vorausgewählt)
-  player: PlayerColor | null;   // Startspieler-Farbe — null = noch nicht gewählt
-  boardSize: BoardSize | null;  // Anzahl Karten — null = noch nicht gewählt
+  theme: ThemeId;
+  player: PlayerColor | null;
+  boardSize: BoardSize | null;
 }
 
-// Startwerte: nur das Theme ist vorausgewählt, Spieler & Größe wählt der Nutzer.
+// Defaults: only the theme is pre-selected, the user picks player and size.
 export const settings: GameSettings = {
   theme: 'code-vibes',
   player: null,
   boardSize: null,
 };
 
-// === Ergebnis der letzten Partie ===
-// Wird vom Game-Screen gesetzt (wenn alle Paare gefunden sind) und vom
-// Game-Over-Screen gelesen: Punktestände, Gewinner und Verlierer.
+/** Result of the last game: set by the game screen, read by the game-over screen. */
 export interface GameResult {
   scores: Record<PlayerColor, number>;
-  winner: PlayerColor; // meiste Punkte (bei Gleichstand irrelevant, siehe isDraw)
-  loser: PlayerColor;  // wenigste Punkte
-  isDraw: boolean;     // true = Gleichstand (Draw-Frame statt Winner-Frame)
+  winner: PlayerColor;
+  loser: PlayerColor;
+  isDraw: boolean;
 }
 
 export let gameResult: GameResult | null = null;
 
+/** Stores the result of the finished game for the game-over screen. */
 export function setGameResult(result: GameResult): void {
   gameResult = result;
 }

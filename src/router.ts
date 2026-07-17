@@ -3,36 +3,37 @@ import { renderSettings } from './screens/settings';
 import { renderGame } from './screens/game';
 import { renderGameOver } from './screens/gameover';
 
-// Die möglichen Screens der App.
+// Possible screens of the app.
 export type Screen = 'home' | 'settings' | 'game' | 'gameover';
 
-// Das Wurzel-Element, in das alle Screens gerendert werden.
+// Root element that all screens are rendered into.
 const root = document.getElementById('app');
 
 /**
- * Wechselt den sichtbaren Screen, indem das Wurzel-Element neu befüllt wird.
- * (Single-Page-App ohne Framework: ein Screen wird gerendert, der vorige verschwindet.)
+ * Switches the visible screen by re-filling the root element.
+ * Single-page app without a framework: one screen renders, the previous one disappears.
  */
 export function navigateTo(screen: Screen): void {
   if (!root) return;
   root.innerHTML = '';
-
-  // Aktiven Screen am <body> markieren, damit das CSS pro Screen reagieren kann
-  // (z.B. heller Hintergrund auf der Settings-Seite).
   document.body.dataset.screen = screen;
+  renderScreen(screen);
+}
 
+/** Renders the given screen into the root element. */
+function renderScreen(screen: Screen): void {
   switch (screen) {
     case 'home':
-      renderHome(root);
+      renderHome(root!);
       break;
     case 'settings':
-      renderSettings(root);
+      renderSettings(root!);
       break;
     case 'game':
-      renderGame(root);
+      renderGame(root!);
       break;
     case 'gameover':
-      renderGameOver(root);
+      renderGameOver(root!);
       break;
   }
 }

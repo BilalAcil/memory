@@ -1,4 +1,4 @@
-// Haupt-Stylesheet: bindet alle Teil-Stylesheets ein.
+// Main stylesheet: imports all partial stylesheets.
 @use 'base';
 @use 'screens/home';
 @use 'screens/settings';

@@ -1,27 +1,25 @@
-// === Design-Tokens ===
-// Zentrale Werte für das ganze Projekt: einmal hier definieren, überall nutzen.
-// Ändert sich z.B. die Akzentfarbe, passen wir sie nur an EINER Stelle an.
+// Design tokens: central values for the whole project, defined once and reused.
 
-// --- Farben ---
-$color-bg-dark:        #303131; // Home-Hintergrund (Anthrazit)
+// Colors
+$color-bg-dark:        #303131;
 $color-text-light:     #ffffff;
-$color-text-on-accent: #303131; // dunkler Text auf hellem Button
-$color-accent-yellow:  #f0ea6e; // Play-Button
+$color-text-on-accent: #303131;
+$color-accent-yellow:  #f0ea6e;
 
-// Theme-Akzentfarben (für später: die zwei Spielfeld-Layouts)
-$color-theme-code:  #1f9e8f; // Code Vibes  → Türkis/Grün
-$color-theme-games: #c2185b; // Games Theme → Magenta/Pink
+// Theme accent colors (the two board layouts)
+$color-theme-code:  #1f9e8f;
+$color-theme-games: #c2185b;
 
-// --- Schrift ---
-$font-family-base:    'Almarai', system-ui, -apple-system, sans-serif; // Fließtext
-$font-family-heading: 'Red Rose', system-ui, -apple-system, sans-serif; // Überschriften
+// Fonts
+$font-family-base:    'Almarai', system-ui, -apple-system, sans-serif;
+$font-family-heading: 'Red Rose', system-ui, -apple-system, sans-serif;
 
-// --- Abstände ---
+// Spacing
 $space-sm: 0.5rem;
 $space-md: 1rem;
 $space-lg: 2rem;
 $space-xl: 3rem;
 
-// --- Radius ---
+// Radius
 $radius-sm: 4px;
 $radius-md: 8px;

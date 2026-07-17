@@ -1,6 +1,6 @@
 @use 'tokens' as *;
 
-// --- Reset: einheitlicher Ausgangszustand über alle Browser ---
+// Reset: consistent starting point across browsers.
 * {
   margin: 0;
   padding: 0;
@@ -18,17 +18,17 @@ body {
   color: $color-text-light;
   -webkit-font-smoothing: antialiased;
 
-  // Zentriert die App, wenn der Bildschirm größer als der Figma-Frame ist.
+  // Centers the app when the screen is larger than the Figma frame.
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-// Wurzel-Element der App: füllt den Viewport, gedeckelt auf den Figma-Frame (1440×1024).
+// App root: fills the viewport, capped to the Figma frame (1440x1024).
 #app {
   width: 100%;
   height: 100%;
   max-width: 1440px;
   max-height: 1024px;
-  overflow: hidden; // schneidet Inhalt ab, der über den Frame ragt
+  overflow: hidden;
 }

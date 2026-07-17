@@ -1,12 +1,11 @@
 @use '../tokens' as *;
 
-// Feder-/Spring-Easing (mehrfaches Überschwingen) für das Aufklappen des Steppers:
-// wächst schnell, schießt über die Zielbreite hinaus und federt ein paar Mal ein.
+// Spring easing (multiple overshoots) for expanding the stepper.
 $spring: linear(0, 0.263 5.7%, 0.815 12.6%, 1.06, 1.184 18.9%, 1.226, 1.245, 1.241,
     1.216 28.5%, 1.106 37.3%, 0.999 46.1%, 0.945, 0.925, 0.927 57.3%,
     0.955 64.6%, 1.019 78.9%, 1.037, 1.036, 1.021 92.2%, 1.001, 1);
 
-// Auf der Settings-Seite ist der gesamte Hintergrund hell (auch um den Frame herum).
+// On the settings screen the whole background is light.
 body[data-screen='settings'] {
   background-color: #ffffff;
 }
@@ -16,31 +15,30 @@ body[data-screen='settings'] {
   background-color: #ffffff;
   color: #303131;
 
-  // Panel exakt in der Section-Mitte.
+  // Panel exactly in the center of the section.
   display: grid;
   place-items: center;
 }
 
 .settings__panel {
-  position: relative; // Bezug für den absolut platzierten Titel
+  position: relative;
   width: fit-content;
   max-width: 100%;
-  margin-left: 114px
+  margin-left: 114px;
 }
 
-// --- Titel mit gelber Unterstreichung + Diamant ---
+// Title with yellow underline and diamond.
 .settings__title {
-  // Am Panel verankert: liegt direkt über der Panel-Oberkante, linksbündig.
-  // Wandert dadurch immer mit dem Panel mit – stabil bei Zoom und Resize.
+  // Anchored to the panel: sits directly above the panel's top edge.
   position: absolute;
-  bottom: 100%; // direkt über dem Panel
-  left: 0; // bündig zur linken Panel-Kante
-  margin-bottom: $space-xl; // fester Abstand zum Panel
+  bottom: 100%;
+  left: 0;
+  margin-bottom: $space-xl;
   padding-bottom: 0.4rem;
-  font-family: $font-family-heading; // Red Rose
-  font-size: 3.375rem; // Figma: 54px
+  font-family: $font-family-heading;
+  font-size: 3.375rem;
   font-weight: 700;
-  color: $color-text-on-accent; // #303131
+  color: $color-text-on-accent;
   cursor: default;
 
   &::after {
@@ -48,7 +46,7 @@ body[data-screen='settings'] {
     position: absolute;
     left: 0;
     bottom: 0;
-    width: 251px; // Figma: feste Linienbreite
+    width: 251px;
     height: 4px;
     background-color: $color-accent-yellow;
   }
@@ -61,11 +59,11 @@ body[data-screen='settings'] {
     width: 12px;
     height: 12px;
     background-color: $color-accent-yellow;
-    transform: rotate(45deg); // Quadrat → Diamant
+    transform: rotate(45deg);
   }
 }
 
-// --- Zwei Spalten: Optionen links, Vorschau rechts ---
+// Two columns: options left, preview right.
 .settings__body {
   width: 1248px;
   height: 540px;
@@ -75,7 +73,7 @@ body[data-screen='settings'] {
   align-items: start;
 }
 
-// --- Linke Spalte: Auswahl-Optionen über die volle Höhe verteilt ---
+// Left column: options spread over the full height.
 .settings__options {
   height: 100%;
   display: flex;
@@ -83,7 +81,7 @@ body[data-screen='settings'] {
   justify-content: space-between;
 }
 
-// --- Optionsgruppen ---
+// Option groups.
 .option-group {
   border: none;
   padding: 0;
@@ -94,14 +92,14 @@ body[data-screen='settings'] {
   align-items: center;
   gap: $space-sm;
   margin-bottom: $space-md;
-  font-family: $font-family-base; // Almarai
-  font-weight: 700; // Figma: Bold
-  font-size: 1.5rem; // Figma: 24px
+  font-family: $font-family-base;
+  font-weight: 700;
+  font-size: 1.5rem;
   cursor: default;
 
   svg,
   img {
-    width: 1.667rem; // Figma: ~26.67px
+    width: 1.667rem;
     height: 1.667rem;
   }
 }
@@ -109,20 +107,20 @@ body[data-screen='settings'] {
 .option-group__items {
   display: flex;
   flex-direction: column;
-  gap: 2px; // 
+  gap: 2px;
   padding-left: 2.5rem;
 }
 
-// --- Eigene Radio-Buttons ---
+// Custom radio buttons.
 .radio {
   display: flex;
   align-items: center;
-  min-height: 32px; // feste Höhe → kein Wackeln beim Hovern (fett vs. normal)
-  font-family: $font-family-base; // Almarai
-  font-size: 1.25rem; // Figma: 20px
-  font-weight: 400; // normal; ausgewählt wird fett (siehe unten)
+  min-height: 32px;
+  font-family: $font-family-base;
+  font-size: 1.25rem;
+  font-weight: 400;
 
-  // Klickbarer Bereich (Label): nur hier Cursor-Pointer + Auswahl.
+  // Clickable area (label): pointer cursor and selection only here.
   &__main {
     display: flex;
     align-items: center;
@@ -130,17 +128,17 @@ body[data-screen='settings'] {
     cursor: pointer;
   }
 
-  // Bereits gewählte Option: erneuter Klick ändert nichts → Standard-Cursor.
+  // Already selected option: clicking again does nothing.
   &__main:has(input:checked) {
     cursor: default;
   }
 
-  // Natives Radio ausblenden und durch eigenen Kreis ersetzen.
+  // Hide the native radio and replace it with a custom circle.
   input {
     appearance: none;
     -webkit-appearance: none;
     margin: 0;
-    width: 20px; // Figma: 20px
+    width: 20px;
     height: 20px;
     border: 3px solid #000000;
     border-radius: 50%;
@@ -158,11 +156,11 @@ body[data-screen='settings'] {
       transition: transform 150ms ease;
     }
 
-    // Gewählt: dünnerer, dunkler Rand (alle Gruppen, erst beim Klick).
+    // Selected: thinner, darker border.
     &:checked {
       border-width: 2px;
       border-color: $color-text-on-accent;
-      cursor: default; // erneuter Klick ändert nichts
+      cursor: default;
     }
 
     &:checked::before {
@@ -170,12 +168,12 @@ body[data-screen='settings'] {
     }
   }
 
-  // Ausgewählte Option wird fett (alle Gruppen).
+  // Selected option becomes bold.
   input:checked~.radio__label {
     font-weight: 700;
   }
 
-  // Hover-Effekt NUR bei Game themes — ausgelöst vom ganzen .radio__main (Kreis + Text).
+  // Hover effect only for game themes, triggered by the whole label.
   &__main:hover:has(input[name='theme']) {
     input {
       border-width: 2px;
@@ -191,24 +189,23 @@ body[data-screen='settings'] {
     }
   }
 
-  // Gelbe Pfeil-Linie nur bei ausgewähltem Theme sichtbar.
+  // Yellow arrow line, visible only for the selected theme.
   &__arrow {
-    width: 50px; // Figma: Linie 41px + Pfeilspitze
+    width: 50px;
     height: auto;
     margin-left: 0.5rem;
     opacity: 0;
     transition: opacity 150ms ease;
   }
 
-  // Pfeil sichtbar bei gewählt (alle Gruppen) oder beim Hovern eines Themes.
+  // Arrow visible when selected or when hovering a theme.
   &__main:has(input:checked)~.radio__arrow,
   &__main:hover:has(input[name='theme'])~.radio__arrow {
     opacity: 1;
   }
 }
 
-// Beim Hovern eines Themes soll das tatsächlich gewählte Theme (falls nicht
-// selbst gehovert) vorübergehend wie "nicht gewählt" aussehen. Nur bei Game themes.
+// While hovering a theme, the actually selected theme looks temporarily unselected.
 .option-group__items:has(.radio__main:hover input[name='theme']) {
   .radio__main:not(:hover):has(input:checked) {
     input {
@@ -230,7 +227,7 @@ body[data-screen='settings'] {
   }
 }
 
-// --- Rechte Spalte: Vorschau oben, Stepper unten über die volle Höhe verteilt ---
+// Right column: preview on top, stepper below.
 .settings__preview-area {
   height: 100%;
   display: flex;
@@ -241,16 +238,16 @@ body[data-screen='settings'] {
 
 .preview__wrapper {
   display: flex;
-  justify-content: flex-end; // Vorschau rechtsbündig im Stepper-Bereich
+  justify-content: flex-end;
 }
 
-// --- Vorschau-Bild (wechselt je nach gewähltem/gehovertem Theme) ---
+// Preview image (changes with the selected/hovered theme).
 .preview {
-  width: 460px; // Figma: feste Breite
-  max-width: 100%; // schrumpft auf schmalen Fenstern mit
+  width: 460px;
+  max-width: 100%;
   margin-right: 114px;
-  aspect-ratio: 460 / 412; // Figma: 460 × 412 → Höhe folgt der Breite
-  border-radius: 16px; // Figma: 16px
+  aspect-ratio: 460 / 412;
+  border-radius: 16px;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -264,35 +261,33 @@ body[data-screen='settings'] {
   }
 }
 
-// --- Stepper unter der Vorschau (breiter als die Vorschau) ---
+// Stepper below the preview (wider than the preview).
 .stepper {
-  position: relative; // Anker für die rechte Verlängerung (::after)
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-around; // Schritte links, Start rechts
-  width: 546px; // Figma: breiter als die 460px-Vorschau
+  justify-content: space-around;
+  width: 546px;
   max-width: 100%;
-  height: 81px; // Figma: 81px
+  height: 81px;
   padding: 0 1.25rem;
-  margin-right: 114px; // Figma: 74px Abstand zur rechten Panel-Kante
+  margin-right: 114px;
   background-color: #f6f6f6;
   font-family: $font-family-base;
-  // Feder-Effekt: Breite + rechter Abstand federn beim Aufklappen mehrfach ein.
+  // Spring effect: width and right margin bounce a few times when expanding.
   transition: width 600ms $spring, margin-right 600ms $spring;
 
-  // Nach dem Klick: erst breiter werden (dann kommen zeitverzögert die Werte).
+  // After the click: grow wider first, then the values fade in.
   &.is-expanded {
     width: 660px;
     margin-right: 0;
   }
 
-  // Graue Verlängerung an der rechten Kante (gleiche Farbe + Höhe).
-  // Wächst beim Hovern des Start-Buttons nach rechts heraus — der Inhalt
-  // im Stepper bleibt dabei komplett unbewegt (die Box selbst bleibt 546px).
+  // Gray extension on the right edge; grows out when hovering the start button.
   &::after {
     content: '';
     position: absolute;
-    left: 100%; // direkt an der rechten Kante ansetzen
+    left: 100%;
     top: 0;
     height: 100%;
     width: 0;
@@ -300,19 +295,19 @@ body[data-screen='settings'] {
     transition: width 300ms ease;
   }
 
-  // Verlängerung wächst nur, wenn der Button auch wirklich klickbar ist (.is-ready).
+  // Extension only grows when the button is actually clickable (.is-ready).
   &.is-ready:has(.stepper__start:hover)::after {
-    width: 10px; // so weit wächst die rechte Seite heraus (kleiner = weniger Wachstum)
+    width: 10px;
   }
 
-  // Die drei Schritt-Labels mit 42px Abstand.
+  // The three step labels with 42px spacing.
   &__steps {
     display: flex;
     align-items: center;
-    gap: 42px; // Figma: 42px zwischen den Schritten
-    transition: opacity 250ms ease; // sanftes Einblenden der neuen Werte
+    gap: 42px;
+    transition: opacity 250ms ease;
 
-    // Sofort ausblenden (kein Fade), während der Stepper breiter wird.
+    // Hide instantly (no fade) while the stepper grows wider.
     &.is-hidden {
       opacity: 0;
       transition: none;
@@ -320,58 +315,57 @@ body[data-screen='settings'] {
   }
 
   &__item {
-    cursor: default; // standardmäßig nicht klickbar (erst wenn alles gewählt ist)
+    cursor: default;
     position: relative;
-    font-family: $font-family-base; // Almarai
-    font-weight: 400; // Figma: Regular
-    font-size: 1.25rem; // Figma: 20px
-    line-height: 1; // Figma: 100%
+    font-family: $font-family-base;
+    font-weight: 400;
+    font-size: 1.25rem;
+    line-height: 1;
   }
 
-  // Klickbar (pointer) nur, wenn Spieler + Größe gewählt sind und noch nicht aufgeklappt.
+  // Clickable (pointer) only when player and size are chosen and not yet expanded.
   &.is-ready:not(.is-expanded) &__item {
     cursor: pointer;
   }
 
-  // Gelber Schrägstrich (gedrehter Balken) mittig im 42px-Abstand.
+  // Yellow slash (rotated bar) centered in the 42px gap.
   &__item:not(:first-child)::before {
     content: '';
     position: absolute;
-    left: -21px; // Mitte des 42px-Abstands
+    left: -21px;
     top: 50%;
-    width: 56px; // Figma: Länge
-    height: 8px; // Figma: 8px dick
+    width: 56px;
+    height: 8px;
     background-color: $color-accent-yellow;
-    transform: translate(-50%, -50%) rotate(109.33deg); // Figma: -109.33° (CSS gespiegelt)
+    transform: translate(-50%, -50%) rotate(109.33deg);
   }
 
-  // Im Wert-Modus (nach Klick): Trennstrich aus dem Figma-Asset (Line 4).
+  // Value mode (after click): separator from the Figma asset (Line 4).
   &__item.is-value:not(:first-child)::before {
-    width: 37px; // Figma: Line 4 (37 × 60)
+    width: 37px;
     height: 60px;
     background: url('/assets/icons/line-4.svg') center / contain no-repeat;
-    transform: translate(-50%, -50%); // Winkel steckt bereits im SVG
+    transform: translate(-50%, -50%);
   }
 
   &__start {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px; // Figma: 8px zwischen Icon und Text
-    width: 126px; // Figma: 126px
-    height: 53px; // Figma: 53px
-    padding: 14px 20px; // Figma: 14px / 20px
+    gap: 8px;
+    width: 126px;
+    height: 53px;
+    padding: 14px 20px;
     background-color: $color-accent-yellow;
     color: $color-text-on-accent;
     border: none;
-    font-family: $font-family-heading; // Red Rose
+    font-family: $font-family-heading;
     font-weight: 700;
     font-size: 1.1rem;
-    // Standardmäßig inert + gedimmt: kein Pointer, kein Hover-Effekt – erst wenn
-    // alle Optionen gewählt sind (.stepper.is-ready), wird der Button interaktiv.
+    // Inert and dimmed by default; interactive only once .stepper.is-ready is set.
     cursor: default;
-    opacity: 0.6; // gedimmt, solange noch nicht alles gewählt ist
-    transform-origin: left center; // wächst beim Skalieren nach rechts (linke Kante bleibt fix)
+    opacity: 0.6;
+    transform-origin: left center;
     transition: transform 250ms ease, opacity 250ms ease;
 
     img {
@@ -381,16 +375,16 @@ body[data-screen='settings'] {
     }
   }
 
-  // Interaktiv (Cursor + Hover-Effekte) nur, wenn Spieler UND Größe gewählt sind.
+  // Interactive (cursor + hover effects) only when player and size are chosen.
   &.is-ready &__start {
     cursor: pointer;
-    opacity: 1; // volle Sichtbarkeit, sobald klickbar
+    opacity: 1;
 
     &:hover {
-      transform: scale(1.1); // beim Hovern nur leicht vergrößern, Farbe bleibt
+      transform: scale(1.1);
     }
 
-    // Icon dreht sich beim Hovern des Buttons um 10° nach links.
+    // Icon rotates to the left on hover.
     &:hover img {
       transform: rotate(-10deg);
     }
