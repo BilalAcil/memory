@@ -97,11 +97,9 @@ export function renderSettings(root: HTMLElement): void {
         break;
       case 'player':
         settings.player = input.value as PlayerColor;
-        input.closest('.option-group')?.classList.remove('is-invalid'); // Fehler-Markierung weg
         break;
       case 'board':
         settings.boardSize = Number(input.value) as BoardSize;
-        input.closest('.option-group')?.classList.remove('is-invalid');
         break;
     }
     updateStepperReady(); // Stepper klickbar machen, sobald alles gewählt ist
@@ -144,22 +142,6 @@ export function renderSettings(root: HTMLElement): void {
     }
   }
 
-  // Markiert fehlende Pflicht-Gruppen (Player/Board) rot + Wackeln – wie beim Start.
-  // Gibt true zurück, wenn etwas fehlt.
-  function markMissing(): boolean {
-    const missing: Element[] = [];
-    if (settings.player === null) {
-      const group = root.querySelector('input[name="player"]')?.closest('.option-group');
-      if (group) missing.push(group);
-    }
-    if (settings.boardSize === null) {
-      const group = root.querySelector('input[name="board"]')?.closest('.option-group');
-      if (group) missing.push(group);
-    }
-    missing.forEach(hintMissing);
-    return missing.length > 0;
-  }
-
   const stepper = root.querySelector<HTMLElement>('.stepper');
   const steps = root.querySelector<HTMLElement>('.stepper__steps');
   const stepItems = root.querySelectorAll<HTMLElement>('.stepper__item');
@@ -199,32 +181,11 @@ export function renderSettings(root: HTMLElement): void {
     });
   }
 
-  // Start → zum Spielfeld (nur wenn Spieler UND Größe gewählt sind).
-  // Fehlt etwas, wackelt die betroffene Gruppe und ihr Titel leuchtet kurz auf.
+  // Start → zum Spielfeld. Der Button ist erst klickbar, wenn Spieler UND Größe
+  // gewählt sind (siehe .stepper.is-ready); vorher passiert bewusst nichts.
   root.querySelector<HTMLButtonElement>('.stepper__start')
     ?.addEventListener('click', () => {
-      if (markMissing()) {
-        return; // etwas fehlt → Hinweis-Effekt statt Weiterleitung
-      }
-
+      if (settings.player === null || settings.boardSize === null) return;
       navigateTo('game');
     });
-}
-
-/**
- * Markiert eine Optionsgruppe als fehlend: Titel bleibt rot (`is-invalid`, bis
- * eine Option gewählt wird) und die Gruppe wackelt einmal kurz (`is-shaking`).
- */
-function hintMissing(group: Element): void {
-  group.classList.add('is-invalid'); // roter Zustand bleibt bestehen
-
-  // Wackeln neu starten (Klasse entfernen → Reflow → wieder setzen).
-  group.classList.remove('is-shaking');
-  void (group as HTMLElement).offsetWidth;
-  group.classList.add('is-shaking');
-  group.addEventListener(
-    'animationend',
-    () => group.classList.remove('is-shaking'),
-    { once: true },
-  );
 }

@@ -2,11 +2,9 @@
 
 // Feder-/Spring-Easing (mehrfaches Überschwingen) für das Aufklappen des Steppers:
 // wächst schnell, schießt über die Zielbreite hinaus und federt ein paar Mal ein.
-$spring: linear(
-  0, 0.263 5.7%, 0.815 12.6%, 1.06, 1.184 18.9%, 1.226, 1.245, 1.241,
-  1.216 28.5%, 1.106 37.3%, 0.999 46.1%, 0.945, 0.925, 0.927 57.3%,
-  0.955 64.6%, 1.019 78.9%, 1.037, 1.036, 1.021 92.2%, 1.001, 1
-);
+$spring: linear(0, 0.263 5.7%, 0.815 12.6%, 1.06, 1.184 18.9%, 1.226, 1.245, 1.241,
+    1.216 28.5%, 1.106 37.3%, 0.999 46.1%, 0.945, 0.925, 0.927 57.3%,
+    0.955 64.6%, 1.019 78.9%, 1.037, 1.036, 1.021 92.2%, 1.001, 1);
 
 // Auf der Settings-Seite ist der gesamte Hintergrund hell (auch um den Frame herum).
 body[data-screen='settings'] {
@@ -89,35 +87,6 @@ body[data-screen='settings'] {
 .option-group {
   border: none;
   padding: 0;
-}
-
-// Fehlende Pflicht-Auswahl: Titel bleibt rot, bis der Spieler etwas wählt.
-.option-group.is-invalid .option-group__title {
-  color: #e5484d;
-}
-
-// Kurzes Wackeln – separate Klasse, wird nach der Animation entfernt und ist
-// dadurch bei erneutem Start-Klick wieder auslösbar (unabhängig vom roten Zustand).
-.option-group.is-shaking {
-  animation: option-group-shake 400ms ease;
-}
-
-@keyframes option-group-shake {
-
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-
-  20%,
-  60% {
-    transform: translateX(-6px);
-  }
-
-  40%,
-  80% {
-    transform: translateX(6px);
-  }
 }
 
 .option-group__title {
@@ -331,7 +300,8 @@ body[data-screen='settings'] {
     transition: width 300ms ease;
   }
 
-  &:has(.stepper__start:hover)::after {
+  // Verlängerung wächst nur, wenn der Button auch wirklich klickbar ist (.is-ready).
+  &.is-ready:has(.stepper__start:hover)::after {
     width: 10px; // so weit wächst die rechte Seite heraus (kleiner = weniger Wachstum)
   }
 
@@ -397,18 +367,27 @@ body[data-screen='settings'] {
     font-family: $font-family-heading; // Red Rose
     font-weight: 700;
     font-size: 1.1rem;
-    cursor: pointer;
+    // Standardmäßig inert + gedimmt: kein Pointer, kein Hover-Effekt – erst wenn
+    // alle Optionen gewählt sind (.stepper.is-ready), wird der Button interaktiv.
+    cursor: default;
+    opacity: 0.6; // gedimmt, solange noch nicht alles gewählt ist
     transform-origin: left center; // wächst beim Skalieren nach rechts (linke Kante bleibt fix)
-    transition: transform 250ms ease;
-
-    &:hover {
-      transform: scale(1.1); // beim Hovern nur leicht vergrößern, Farbe bleibt
-    }
+    transition: transform 250ms ease, opacity 250ms ease;
 
     img {
       width: 1.4em;
       height: 1.4em;
       transition: transform 250ms ease;
+    }
+  }
+
+  // Interaktiv (Cursor + Hover-Effekte) nur, wenn Spieler UND Größe gewählt sind.
+  &.is-ready &__start {
+    cursor: pointer;
+    opacity: 1; // volle Sichtbarkeit, sobald klickbar
+
+    &:hover {
+      transform: scale(1.1); // beim Hovern nur leicht vergrößern, Farbe bleibt
     }
 
     // Icon dreht sich beim Hovern des Buttons um 10° nach links.
