@@ -121,7 +121,7 @@
 .home__watermark {
   position: absolute;
   left: 0px; // Figma: ragt links aus dem Bild
-  bottom: -40px;
+  bottom: 0px;
   width: clamp(320px, 32vw, 414px); // Figma: ~414px
   height: auto;
   pointer-events: none; // blockiert keine Klicks
