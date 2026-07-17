@@ -260,8 +260,8 @@ function modalMarkup(theme: ThemeId): string {
 
 /** Adds a point for the given player and updates the display. */
 function addPoint(ctx: GameContext, color: PlayerColor): void {
-  ctx.scores[color] += 1;
   const el = ctx.scoreValue[color];
+  ctx.scores[color] += 1;
   if (el) el.textContent = String(ctx.scores[color]);
 }
 
@@ -422,12 +422,12 @@ function openModal(ctx: GameContext, modal: HTMLElement | null): void {
 /** Plays the close animation, then actually hides the dialog. */
 function closeModal(ctx: GameContext, modal: HTMLElement | null): void {
   if (!modal) return;
-  modal.classList.add('is-closing');
   const dialog = modal.querySelector<HTMLElement>('.game__dialog');
   const finish = (): void => {
     modal.classList.remove('is-open', 'is-closing');
     ctx.section?.classList.remove('is-modal-open');
   };
+  modal.classList.add('is-closing');
   if (dialog) dialog.addEventListener('animationend', finish, { once: true });
   else finish();
 }
@@ -436,8 +436,8 @@ function closeModal(ctx: GameContext, modal: HTMLElement | null): void {
 function setupDemoShortcut(ctx: GameContext): void {
   ctx.turnIcon?.addEventListener('click', () => {
     if (ctx.lockBoard) return;
-    ctx.lockBoard = true;
     const allCards = ctx.root.querySelectorAll<HTMLButtonElement>('.card');
+    ctx.lockBoard = true;
     allCards.forEach((card) => card.classList.add('is-flipped'));
     window.setTimeout(() => {
       allCards.forEach((card) => card.classList.add('is-matched'));

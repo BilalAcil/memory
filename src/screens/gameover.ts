@@ -12,8 +12,8 @@ interface ResolvedResult {
 /** Renders the game-over screen: final score plus the winner or draw frame. */
 export function renderGameOver(root: HTMLElement): void {
   const theme = settings.theme;
-  document.body.dataset.theme = theme;
   const result = resolveResult();
+  document.body.dataset.theme = theme;
   root.innerHTML = gameOverMarkup(theme, result) + resultFrame(theme, result);
   root
     .querySelector<HTMLButtonElement>('.winner__back')
