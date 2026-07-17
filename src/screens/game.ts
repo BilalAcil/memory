@@ -159,11 +159,11 @@ export function renderGame(root: HTMLElement): void {
     orange: root.querySelector('.score__value[data-color="orange"]'),
   };
 
-  /** Punkt für den aktuellen Spieler vergeben + Anzeige aktualisieren. */
-  function addPoint(): void {
-    scores[currentPlayer] += 1;
-    const el = scoreValue[currentPlayer];
-    if (el) el.textContent = String(scores[currentPlayer]);
+  /** Punkt für einen bestimmten Spieler vergeben + Anzeige aktualisieren. */
+  function addPoint(color: PlayerColor): void {
+    scores[color] += 1;
+    const el = scoreValue[color];
+    if (el) el.textContent = String(scores[color]);
   }
 
   /** Zum anderen Spieler wechseln + Indikator-Farbe und Cursor-Farbe umschalten. */
@@ -249,10 +249,16 @@ export function renderGame(root: HTMLElement): void {
     const first = firstCard;
     const second = card;
     firstCard = null;
-    lockBoard = true;
 
     if (first.dataset.motif === second.dataset.motif) {
-      // Paar gefunden – der Spieler bleibt dran. Der Punkt kommt erst nach den Effekten.
+      // Paar gefunden – der Spieler bleibt dran und kann SOFORT die nächste Karte
+      // aufdecken. Die Effekte (Sprung, Ausblenden, Glanz) und der Punkt laufen
+      // asynchron im Hintergrund weiter, ohne das Brett zu sperren.
+      const scoringPlayer = currentPlayer; // wem der Punkt gehört – bleibt fix, auch bei schnellem Weiterspielen
+      matchedPairs += 1;
+      const isLastPair = matchedPairs === totalPairs;
+      if (isLastPair) lockBoard = true; // letztes Paar: bis zum Game-Over gesperrt lassen
+
       window.setTimeout(() => {
         // 1. Karten springen kurz + blenden auf 0.1 aus.
         first.classList.add('is-matched');
@@ -260,20 +266,16 @@ export function renderGame(root: HTMLElement): void {
         // 2. Nach Sprung (650ms) + Ausblenden (300ms) den Glanz diagonal über die Section ziehen.
         window.setTimeout(() => {
           playFlash().then(() => {
-            // 3. Erst nach dem Glanz den Punkt vergeben.
-            addPoint();
-            matchedPairs += 1;
-            // Alle Paare gefunden → Partie beenden, sonst weiterspielen.
-            if (matchedPairs === totalPairs) {
-              endGame();
-            } else {
-              lockBoard = false;
-            }
+            // 3. Erst nach dem Glanz den Punkt vergeben (immer dem richtigen Spieler).
+            addPoint(scoringPlayer);
+            // Alle Paare gefunden → Partie beenden.
+            if (isLastPair) endGame();
           });
         }, 950);
       }, 450);
     } else {
-      // Kein Paar: nach kurzer Zeit beide wieder verdecken und Spieler wechseln.
+      // Kein Paar: Brett sperren, nach kurzer Zeit beide wieder verdecken und Spieler wechseln.
+      lockBoard = true;
       window.setTimeout(() => {
         first.classList.remove('is-flipped');
         second.classList.remove('is-flipped');
